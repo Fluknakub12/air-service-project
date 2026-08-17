@@ -1,0 +1,1716 @@
+<!doctype html>
+<html lang="th" class="h-full bg-slate-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirCool Pro - Customer Portal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Fonts (Kanit) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Kanit", "sans-serif"] },
+            colors: {
+              brand: {
+                50: "#f5f3ff",
+                600: "#7c3aed",
+                700: "#6d28d9",
+                900: "#0f172a",
+              },
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body
+    class="h-full font-sans antialiased text-slate-800 flex flex-col relative overflow-x-hidden"
+  >
+    <!-- TOP NAVBAR -->
+    <header
+      class="bg-slate-900 border-b border-purple-900/40 text-white sticky top-0 z-40 no-print"
+    >
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <button
+            onclick="toggleMobileSidebar()"
+            class="md:hidden text-slate-300 hover:text-white p-1.5 text-lg"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div
+            class="flex items-center space-x-3 cursor-pointer"
+            onclick="showPage('page-customer-home')"
+          >
+            <div
+              class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-violet-400 flex items-center justify-center text-white shadow-lg shadow-purple-900/50"
+            >
+              <i class="fa-solid font-bold fa-snowflake text-lg sm:text-xl"></i>
+            </div>
+            <div>
+              <h1
+                class="font-bold text-base sm:text-lg leading-tight tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-purple-300"
+              >
+                AirCool Pro
+              </h1>
+              <p
+                class="text-[9px] sm:text-[10px] text-purple-300 font-light tracking-wider uppercase"
+                data-i18n="sys_sub"
+              >
+                Customer Service Portal
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-4">
+          <!-- Language Switcher -->
+          <button
+            onclick="toggleLang()"
+            class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg text-xs border border-slate-700 transition"
+          >
+            <i class="fa-solid fa-globe text-purple-400"></i>
+            <span id="lang-indicator" class="font-semibold">TH | EN</span>
+          </button>
+
+          <!-- Notifications Bell -->
+          <div class="relative">
+            <button
+              onclick="toggleNotifDropdown()"
+              class="relative p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            >
+              <i class="fa-regular fa-bell text-lg"></i>
+              <span
+                id="notif-ping"
+                class="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full animate-ping"
+              ></span>
+              <span
+                id="notif-badge"
+                class="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full"
+              ></span>
+            </button>
+            <div
+              id="notif-dropdown"
+              class="hidden absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 text-slate-800 z-50 overflow-hidden"
+            >
+              <div
+                class="p-3 bg-slate-900 text-white flex justify-between items-center text-xs font-bold"
+              >
+                <span data-i18n="notif_head">การแจ้งเตือนงานบริการ</span>
+                <button
+                  onclick="clearNotif()"
+                  class="text-[10px] text-purple-300 hover:underline"
+                  data-i18n="notif_read_all"
+                >
+                  อ่านทั้งหมด
+                </button>
+              </div>
+              <div
+                class="divide-y divide-slate-100 text-xs max-h-64 overflow-y-auto"
+              >
+                <div class="p-3 hover:bg-purple-50 transition cursor-pointer">
+                  <p
+                    class="font-semibold text-purple-900"
+                    data-i18n="notif_msg_title"
+                  >
+                    ช่างวิชัย กำลังเดินทางไปหน้างาน
+                  </p>
+                  <p
+                    class="text-slate-500 text-[11px] mt-0.5"
+                    data-i18n="notif_msg_desc"
+                  >
+                    นัดหมายซ่อมแอร์ JOB-202608-001
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile -->
+          <div
+            class="flex items-center space-x-2 sm:space-x-3 border-l border-slate-700 pl-3 sm:pl-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full bg-purple-600 border border-purple-400 flex items-center justify-center font-bold text-xs"
+            >
+              นจ
+            </div>
+            <div class="hidden lg:block text-left">
+              <p
+                class="text-xs font-semibold leading-none text-slate-200"
+                data-i18n="user_name"
+              >
+                คุณนรินทร์ ใจดี
+              </p>
+              <span
+                class="inline-block px-2 py-0.5 mt-1 text-[10px] font-bold rounded-md bg-purple-900/80 text-purple-200 border border-purple-700/50"
+                data-i18n="user_role"
+              >
+                Customer Role
+              </span>
+            </div>
+            <button
+              onclick="logout()"
+              title="ออกจากระบบ"
+              class="text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800 transition"
+            >
+              <i class="fa-solid fa-right-from-bracket text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+      <!-- SIDEBAR MENU -->
+      <aside
+        id="main-sidebar"
+        class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 no-print border-r border-slate-800 absolute md:relative z-30 h-full transition-transform duration-300 transform -translate-x-full md:translate-x-0"
+      >
+        <div class="p-4 space-y-5 overflow-y-auto">
+          <div
+            class="bg-gradient-to-r from-purple-950 to-slate-800 p-3 rounded-xl border border-purple-800/40"
+          >
+            <div class="text-[11px] text-purple-300 font-medium">
+              Role Mode: Customer
+            </div>
+            <div class="text-xs font-light text-slate-300 mt-0.5">
+              Member ID: CUST-8812
+            </div>
+          </div>
+          <nav class="space-y-1" id="sidebar-nav"></nav>
+        </div>
+        <div
+          class="p-4 border-t border-slate-800 text-xs text-slate-500 flex items-center justify-between"
+        >
+          <span>AirCool v2.5</span>
+          <i class="fa-solid fa-user-check text-purple-400"></i>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT AREA -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50 w-full">
+        <!-- 1. หน้าแรก / บริการของเรา -->
+        <section id="page-customer-home" class="space-y-6">
+          <div
+            class="bg-gradient-to-r from-purple-900 via-indigo-900 to-slate-900 p-6 sm:p-8 rounded-3xl text-white shadow-lg space-y-4"
+          >
+            <span
+              class="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/30 text-purple-200 border border-purple-400/30"
+              data-i18n="home_badge"
+            >
+              ยินดีต้อนรับสู่ AirCool Pro Service
+            </span>
+            <h2
+              class="text-2xl sm:text-3xl font-bold"
+              data-i18n="home_banner_title"
+            >
+              บริการล้าง ซ่อม และติดตั้งแอร์ครบวงจร
+            </h2>
+            <p
+              class="text-xs sm:text-sm text-purple-200 max-w-xl"
+              data-i18n="home_banner_desc"
+            >
+              จองคื่อง่าย ช่างผู้เชี่ยวชาญได้มาตรฐาน พร้อมติดตามสถานะงานได้แบบ
+              Real-time และตรวจสอบประวัติการรับประกันได้ทันที
+            </p>
+            <div class="pt-2">
+              <button
+                onclick="showPage('page-customer-booking')"
+                class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow-md transition"
+              >
+                <i class="fa-solid fa-calendar-plus mr-1.5"></i>
+                <span data-i18n="btn_book_now">จองคิวบริการด่วน</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ระบบแจ้งเตือนรอบล้างแอร์อัตโนมัติ -->
+          <div
+            class="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm"
+          >
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 font-bold"
+              >
+                <i class="fa-solid fa-bell-concierge text-lg"></i>
+              </div>
+              <div>
+                <h4
+                  class="font-bold text-amber-900 text-sm"
+                  data-i18n="rem_title"
+                >
+                  แจ้งเตือนรอบล้างแอร์อัตโนมัติ (รอบ 6 เดือน)
+                </h4>
+                <p class="text-xs text-amber-700 mt-0.5" data-i18n="rem_desc">
+                  แอร์ห้องนอนใหญ่ (Daikin 12,000 BTU)
+                  ถึงรอบกำหนดล้างทำความสะอาดแล้วเพื่อประสิทธิภาพความเย็นสูงสุด
+                </p>
+              </div>
+            </div>
+            <button
+              onclick="showPage('page-customer-booking')"
+              class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold shrink-0 shadow"
+              data-i18n="rem_btn"
+            >
+              คลิกจองคิวล้างด่วน
+            </button>
+          </div>
+
+          <!-- แอร์ที่ลงทะเบียนไว้ของฉัน -->
+          <div
+            class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4"
+          >
+            <h3
+              class="font-bold text-slate-900 text-base"
+              data-i18n="asset_title"
+            >
+              <i class="fa-solid fa-snowflake text-purple-600 mr-2"></i>
+              แอร์ที่ลงทะเบียนไว้ในบ้านของคุณ (Registered Assets)
+            </h3>
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 gap-4"
+              id="customer-assets-container"
+            >
+              <!-- ข้อมูลจะถูกโหลดผ่าน API โดยอัตโนมัติ -->
+              <div
+                class="p-4 rounded-xl border border-purple-100 bg-purple-50/40 flex items-center justify-between"
+              >
+                <div>
+                  <span
+                    class="px-2 py-0.5 bg-purple-200 text-purple-800 rounded font-bold text-[10px]"
+                    data-i18n="asset_room1"
+                    >ห้องนอนใหญ่</span
+                  >
+                  <h4 class="font-bold text-slate-900 text-sm mt-1">
+                    Daikin Inverter 12,000 BTU
+                  </h4>
+                  <p class="text-xs text-slate-500" data-i18n="asset_info1">
+                    Model: DK-99283-2024 | ล้างล่าสุด: 15 ก.พ. 2026
+                  </p>
+                </div>
+                <button
+                  onclick="showPage('page-customer-booking')"
+                  class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-bold"
+                  data-i18n="asset_btn"
+                >
+                  นัดล้างแอร์
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-2">
+              <div
+                class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold"
+              >
+                <i class="fa-solid fa-wind text-lg"></i>
+              </div>
+              <h3
+                class="font-bold text-slate-900 text-base"
+                data-i18n="card_clean_title"
+              >
+                บริการล้างแอร์มาตรฐาน
+              </h3>
+              <p class="text-xs text-slate-500" data-i18n="card_clean_desc">
+                ล้างสะอาดล้ำลึก ตรวจเช็คน้ำยาและระบบไฟฟรีทุกครั้ง
+              </p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-2">
+              <div
+                class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold"
+              >
+                <i class="fa-solid fa-screwdriver-wrench text-lg"></i>
+              </div>
+              <h3
+                class="font-bold text-slate-900 text-base"
+                data-i18n="card_repair_title"
+              >
+                ซ่อมแซม & เปลี่ยนอะไหล่
+              </h3>
+              <p class="text-xs text-slate-500" data-i18n="card_repair_desc">
+                วิเคราะห์อาการแม่นยำ อะไหล่แท้พร้อมใบรับประกัน 90 วัน
+              </p>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border shadow-sm space-y-2">
+              <div
+                class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold"
+              >
+                <i class="fa-solid fa-snowflake text-lg"></i>
+              </div>
+              <h3
+                class="font-bold text-slate-900 text-base"
+                data-i18n="card_install_title"
+              >
+                ติดตั้งแอร์ใหม่
+              </h3>
+              <p class="text-xs text-slate-500" data-i18n="card_install_desc">
+                ทีมช่างมืออาชีพติดตั้งเรียบร้อย เก็บงานสะอาดเรียบร้อย
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. จองคิวบริการ (ซ่อม/ล้าง/ติดตั้ง) -->
+        <section id="page-customer-booking" class="space-y-6 hidden">
+          <div
+            class="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm space-y-6"
+          >
+            <div class="border-b pb-4">
+              <h2
+                class="text-xl font-bold text-slate-900"
+                data-i18n="book_page_title"
+              >
+                จองคิวบริการ (ซ่อม / ล้าง / ติดตั้ง)
+              </h2>
+              <p
+                class="text-xs text-slate-500 mt-0.5"
+                data-i18n="book_page_desc"
+              >
+                กรอกข้อมูลรายละเอียดสถานที่และเลือกประเภทบริการที่ต้องการ
+              </p>
+            </div>
+
+            <form
+              onsubmit="handleBookingSubmit(event)"
+              class="space-y-4 text-xs"
+            >
+              <div>
+                <label
+                  class="block font-semibold mb-1"
+                  data-i18n="lbl_service_type"
+                  >เลือกประเภทบริการ</label
+                >
+                <select
+                  id="booking-service-type"
+                  class="w-full border rounded-xl p-2.5"
+                >
+                  <option
+                    value="ล้างแอร์บ้าน (Air Cleaning)"
+                    data-i18n="opt_clean"
+                  >
+                    ล้างแอร์บ้าน (Air Cleaning)
+                  </option>
+                  <option
+                    value="ซ่อมแอร์ / ตรวจเช็กอาการเสีย (Repair)"
+                    selected
+                    data-i18n="opt_repair"
+                  >
+                    ซ่อมแอร์ / ตรวจเช็กอาการเสีย (Repair)
+                  </option>
+                  <option
+                    value="ติดตั้งแอร์ใหม่ (New Installation)"
+                    data-i18n="opt_install"
+                  >
+                    ติดตั้งแอร์ใหม่ (New Installation)
+                  </option>
+                </select>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block font-semibold mb-1" data-i18n="lbl_date"
+                    >วันที่ต้องการนัดหมาย</label
+                  ><input
+                    type="date"
+                    id="booking-date"
+                    value="2026-08-18"
+                    class="w-full border rounded-xl p-2.5"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="block font-semibold mb-1" data-i18n="lbl_time"
+                    >ช่วงเวลา</label
+                  >
+                  <select
+                    id="booking-timeslot"
+                    class="w-full border rounded-xl p-2.5"
+                  >
+                    <option>09:00 น. - 12:00 น.</option>
+                    <option selected>13:00 น. - 16:00 น.</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label class="block font-semibold mb-1" data-i18n="lbl_address"
+                  >ที่อยู่หน้างาน / รายละเอียดอาการเสีย</label
+                >
+                <textarea
+                  id="booking-address"
+                  class="w-full border rounded-xl p-2.5"
+                  rows="3"
+                  required
+                >
+88/12 หมู่บ้านสุขสันต์ ต.คูคต อ.ลำลูกกา จ.ปทุมธานี (แอร์ไม่เย็น มีเสียงหึ่งๆ)</textarea
+                >
+              </div>
+              <div class="flex justify-end space-x-2 pt-4 border-t">
+                <button
+                  type="submit"
+                  class="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow transition"
+                  data-i18n="btn_confirm_booking"
+                >
+                  ยืนยันการจองคิวบริการ
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- 3. ติดตามสถานะงาน Real-time & ชำระเงินออนไลน์ -->
+        <section id="page-customer-tracking" class="space-y-6 hidden">
+          <div
+            class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm"
+          >
+            <h2
+              class="text-xl font-bold text-slate-900"
+              data-i18n="track_title"
+            >
+              ติดตามสถานะงาน Real-time & ชำระเงินออนไลน์
+            </h2>
+            <p class="text-xs text-slate-500 mt-1" data-i18n="track_desc">
+              อัปเดตสถานะการปฏิบัติงานของช่าง พร้อมช่องทางสแกนจ่าย QR Code
+              พร้อมเพย์
+            </p>
+          </div>
+
+          <div
+            class="bg-white p-6 sm:p-8 rounded-2xl border border-purple-200 shadow-md space-y-6"
+          >
+            <div
+              class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 gap-2"
+            >
+              <div>
+                <span class="text-purple-600 font-bold text-xs"
+                  >JOB-202608-001</span
+                >
+                <h3
+                  class="text-lg font-bold text-slate-900"
+                  data-i18n="track_job_name"
+                >
+                  ซ่อมแอร์บ้าน (เปลี่ยนคาปาซิเตอร์)
+                </h3>
+              </div>
+              <span
+                class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold animate-pulse"
+                data-i18n="track_status"
+              >
+                <i class="fa-solid fa-spinner fa-spin mr-1"></i>
+                ช่างกำลังปฏิบัติงานหน้างาน (Working)
+              </span>
+            </div>
+
+            <!-- TIMELINE PROGRESS -->
+            <div
+              class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs text-center py-4"
+            >
+              <div
+                class="p-3 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-200 font-bold"
+                data-i18n="t_step1"
+              >
+                <i class="fa-solid fa-circle-check text-base mb-1 block"></i>
+                1. ยืนยันคิวจองสำเร็จ
+              </div>
+              <div
+                class="p-3 bg-emerald-50 text-emerald-800 rounded-xl border border-emerald-200 font-bold"
+                data-i18n="t_step2"
+              >
+                <i class="fa-solid fa-circle-check text-base mb-1 block"></i>
+                2. จัดสรรช่าง (วิชัย)
+              </div>
+              <div
+                class="p-3 bg-purple-100 text-purple-900 rounded-xl border border-purple-300 font-bold shadow-sm"
+                data-i18n="t_step3"
+              >
+                <i class="fa-solid fa-person-digging text-base mb-1 block"></i>
+                3. กำลังปฏิบัติงาน
+              </div>
+              <div
+                class="p-3 bg-slate-100 text-slate-400 rounded-xl border border-slate-200"
+                data-i18n="t_step4"
+              >
+                <i class="fa-solid fa-circle text-base mb-1 block"></i>
+                4. ชำระเงิน & เสร็จสิ้น
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs pt-2">
+              <div class="bg-slate-50 p-4 rounded-xl border">
+                <p class="text-slate-400" data-i18n="tech_label">
+                  ช่างผู้ให้บริการ
+                </p>
+                <p class="font-bold text-slate-900 text-sm mt-1">
+                  นายวิชัย ช่างทอง (TECH-002)
+                </p>
+                <p class="text-purple-600 mt-0.5">โทร: 081-234-5678</p>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-xl border">
+                <p class="text-slate-400" data-i18n="time_label">เวลานัดหมาย</p>
+                <p class="font-bold text-slate-900 text-sm mt-1">
+                  16 ส.ค. 2026 (10:00 น.)
+                </p>
+                <p class="text-emerald-600 mt-0.5" data-i18n="on_time">
+                  ตรงต่อเวลา
+                </p>
+              </div>
+              <div class="bg-slate-50 p-4 rounded-xl border">
+                <p class="text-slate-400" data-i18n="price_label">
+                  ยอดชำระสุทธิ
+                </p>
+                <p class="font-bold text-purple-700 text-sm mt-1">฿1,177.00</p>
+                <p class="text-slate-500 mt-0.5" data-i18n="pay_status">
+                  รอชำระหลังเสร็จงาน
+                </p>
+              </div>
+            </div>
+
+            <!-- Online Payment Box -->
+            <div
+              class="bg-purple-50/60 p-5 rounded-2xl border border-purple-200 space-y-4 text-xs"
+            >
+              <div class="flex justify-between items-center">
+                <h4
+                  class="font-bold text-purple-900 text-sm"
+                  data-i18n="pay_box_title"
+                >
+                  <i class="fa-solid fa-qrcode mr-1.5"></i>
+                  ชำระเงินผ่าน QR Code พร้อมเพย์ (PromptPay Online Payment)
+                </h4>
+                <span
+                  class="px-2.5 py-1 bg-purple-200 text-purple-800 rounded font-bold"
+                  >ยอดรวม ฿1,177.00</span
+                >
+              </div>
+              <div
+                class="flex flex-col sm:flex-row items-center gap-4 bg-white p-4 rounded-xl border"
+              >
+                <div
+                  class="w-28 h-28 bg-slate-900 text-white flex flex-col items-center justify-center rounded-xl p-2 text-center shrink-0"
+                >
+                  <i class="fa-solid fa-qrcode text-4xl mb-1"></i>
+                  <span class="text-[9px]">PromptPay QR</span>
+                </div>
+                <div class="space-y-2 flex-1 w-full">
+                  <p class="font-semibold text-slate-700" data-i18n="bank_acc">
+                    โอนเข้าบัญชี: บริษัท แอร์ดีดี เซอร์วิส แอนด์ แอสเซท จำกัด
+                  </p>
+                  <p class="text-slate-500 font-mono">
+                    ธนาคารกสิกรไทย (KBANK): 012-3-45678-9
+                  </p>
+                  <div>
+                    <label
+                      class="block font-semibold mb-1"
+                      data-i18n="upload_slip_lbl"
+                      >อัปโหลดสลิปโอนเงินชำระค่าบริการ</label
+                    >
+                    <input
+                      type="file"
+                      class="w-full border rounded-xl p-1.5 text-xs bg-slate-50"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="flex justify-end">
+                <button
+                  onclick="showToast('อัปโหลดสลิปและแจ้งชำระเงินสำเร็จ!')"
+                  class="px-5 py-2.5 bg-purple-600 text-white font-bold rounded-xl shadow"
+                  data-i18n="btn_confirm_pay"
+                >
+                  ยืนยันการชำระเงินออนไลน์
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. ประวัติการใช้บริการ & ประกัน -->
+        <section id="page-customer-history" class="space-y-6 hidden">
+          <div
+            class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm"
+          >
+            <h2 class="text-xl font-bold text-slate-900" data-i18n="hist_title">
+              ประวัติการใช้บริการ & ประกัน
+            </h2>
+            <p class="text-xs text-slate-500 mt-1" data-i18n="hist_desc">
+              ประวัติใบเสร็จ เอกสารรับประกันอะไหล่ 90 วัน และให้คะแนนความพึงพอใจ
+            </p>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+          >
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead
+                  class="bg-slate-50 text-slate-500 uppercase text-[11px] font-semibold border-b"
+                >
+                  <tr>
+                    <th class="p-4" data-i18n="th_job">Job No. / วันที่</th>
+                    <th class="p-4" data-i18n="th_service">รายการบริการ</th>
+                    <th class="p-4" data-i18n="th_price">ยอดเงิน</th>
+                    <th class="p-4" data-i18n="th_warranty">สถานะประกัน</th>
+                    <th class="p-4 text-center" data-i18n="th_action">
+                      ดาวน์โหลดใบเสร็จ / ประเมิน
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700 text-xs">
+                  <tr class="hover:bg-slate-50">
+                    <td class="p-4 font-semibold text-purple-700">
+                      JOB-202608-001<br /><span
+                        class="text-[10px] text-slate-400 font-normal"
+                        >16 ส.ค. 2026</span
+                      >
+                    </td>
+                    <td class="p-4" data-i18n="hist_item_desc">
+                      ซ่อมแอร์ & เปลี่ยนคาปาซิเตอร์รัน 45 uF
+                    </td>
+                    <td class="p-4 font-bold text-slate-900">฿1,177.00</td>
+                    <td class="p-4">
+                      <span
+                        class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[11px]"
+                        data-i18n="warranty_badge"
+                        >มีประกัน (เหลือ 89 วัน)</span
+                      >
+                    </td>
+                    <td class="p-4 text-center space-x-1">
+                      <button
+                        onclick="showToast('กำลังดาวน์โหลดใบเสร็จรับเงิน PDF')"
+                        class="px-3 py-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded-lg font-semibold"
+                      >
+                        <i class="fa-solid fa-download mr-1"></i> PDF
+                      </button>
+                      <button
+                        onclick="openReviewModal()"
+                        class="px-3 py-1.5 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-lg font-semibold"
+                        data-i18n="btn_review"
+                      >
+                        <i class="fa-solid fa-star mr-1"></i> ให้คะแนนช่าง
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. จัดการที่อยู่สถานที่ติดตั้งแอร์ (Multiple Addresses) -->
+        <section id="page-customer-address" class="space-y-6 hidden">
+          <div
+            class="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200 shadow-sm"
+          >
+            <div>
+              <h2
+                class="text-xl font-bold text-slate-900"
+                data-i18n="addr_title"
+              >
+                จัดการที่อยู่สถานที่ติดตั้งแอร์ (Multiple Addresses)
+              </h2>
+              <p class="text-xs text-slate-500 mt-1" data-i18n="addr_desc">
+                บันทึกที่อยู่บ้านพัก คอนโด หรือสำนักงานเพื่อความสะดวกในการจองคิว
+              </p>
+            </div>
+            <button
+              onclick="openAddAddressModal()"
+              class="px-4 py-2.5 bg-purple-600 text-white text-xs font-bold rounded-xl shadow hover:bg-purple-700"
+              data-i18n="btn_add_addr"
+            >
+              <i class="fa-solid fa-plus mr-1"></i> + เพิ่มที่อยู่ใหม่
+            </button>
+          </div>
+
+          <!-- แบบฟอร์มเพิ่มที่อยู่ใหม่ -->
+          <div
+            id="box-add-address"
+            class="hidden bg-white p-6 rounded-2xl border border-purple-300 shadow-md space-y-4 text-xs"
+          >
+            <div class="flex justify-between items-center border-b pb-3">
+              <h3
+                class="font-bold text-purple-900 text-sm"
+                data-i18n="form_addr_title"
+              >
+                <i class="fa-solid fa-house-chimney-user mr-1.5"></i>
+                กรอกรายละเอียดที่อยู่ติดตั้งแอร์ใหม่
+              </h3>
+              <button
+                onclick="closeAddAddressModal()"
+                class="text-slate-400 hover:text-rose-500"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <form onsubmit="handleSaveNewAddress(event)" class="space-y-3">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-semibold mb-1" data-i18n="f_lbl_name"
+                    >ชื่อสถานที่ / โซนบ้าน (เช่น บ้านแม่, คอนโดสุขุมวิท)</label
+                  >
+                  <input
+                    type="text"
+                    id="new-addr-name"
+                    placeholder="บ้านพักตากอากาศ ปทุมธานี"
+                    class="w-full border rounded-xl p-2.5"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block font-semibold mb-1"
+                    data-i18n="f_lbl_phone"
+                    >เบอร์โทรศัพท์ติดต่อประจำจุด</label
+                  >
+                  <input
+                    type="text"
+                    id="new-addr-phone"
+                    placeholder="089-111-2222"
+                    class="w-full border rounded-xl p-2.5"
+                    required
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="block font-semibold mb-1" data-i18n="f_lbl_detail"
+                  >บ้านเลขที่ / ซอย / ถนน</label
+                >
+                <input
+                  type="text"
+                  id="new-addr-detail"
+                  placeholder="99/55 ซอยพหลโยธิน 52"
+                  class="w-full border rounded-xl p-2.5"
+                  required
+                />
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label class="block font-semibold mb-1" data-i18n="f_lbl_sub"
+                    >ตำบล / แขวง</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="คูคต"
+                    class="w-full border rounded-xl p-2.5"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="block font-semibold mb-1" data-i18n="f_lbl_dist"
+                    >อำเภอ / เขต</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="ลำลูกกา"
+                    class="w-full border rounded-xl p-2.5"
+                    required
+                  />
+                </div>
+                <div>
+                  <label class="block font-semibold mb-1" data-i18n="f_lbl_prov"
+                    >จังหวัด / รหัสไปรษณีย์</label
+                  >
+                  <input
+                    type="text"
+                    placeholder="ปทุมธานี 12130"
+                    class="w-full border rounded-xl p-2.5"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="flex justify-end space-x-2 pt-2 border-t">
+                <button
+                  type="button"
+                  onclick="closeAddAddressModal()"
+                  class="px-4 py-2 border rounded-xl font-medium"
+                  data-i18n="btn_cancel"
+                >
+                  ยกเลิก
+                </button>
+                <button
+                  type="submit"
+                  class="px-5 py-2 bg-purple-600 text-white font-bold rounded-xl shadow"
+                  data-i18n="btn_save_addr"
+                >
+                  บันทึกที่อยู่ใหม่
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-4"
+            id="address-grid-list"
+          >
+            <div
+              class="bg-white p-5 rounded-2xl border border-purple-200 shadow-sm space-y-3"
+            >
+              <div class="flex justify-between items-center">
+                <span
+                  class="px-2.5 py-0.5 bg-purple-100 text-purple-700 rounded-full font-bold text-xs"
+                  data-i18n="addr_default_tag"
+                  >ที่อยู่หลัก (Default)</span
+                >
+                <button class="text-slate-400 hover:text-rose-600 text-xs">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+              <h3 class="font-bold text-slate-900 text-sm">
+                บ้านเดี่ยว สุขสันต์ (ลำลูกกา)
+              </h3>
+              <p class="text-xs text-slate-500">
+                88/12 หมู่บ้านสุขสันต์ ต.คูคต อ.ลำลูกกา จ.ปทุมธานี 12130
+              </p>
+            </div>
+            <div
+              class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3"
+            >
+              <div class="flex justify-between items-center">
+                <span
+                  class="px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-full font-bold text-xs"
+                  data-i18n="addr_condo_tag"
+                  >คอนโดส่วนตัว</span
+                >
+                <button class="text-slate-400 hover:text-rose-600 text-xs">
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+              <h3 class="font-bold text-slate-900 text-sm">
+                Lumpini Ville (ลาดพร้าว)
+              </h3>
+              <p class="text-xs text-slate-500">
+                129/54 ชั้น 7 อาคาร B ถนนลาดพร้าว แขวงจอมพล เขตจตุจักร กรุงเทพฯ
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. เพิ่มหน้า "บัญชีของฉัน" (My Account Profile) -->
+        <section id="page-customer-account" class="space-y-6 hidden">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900" data-i18n="acc_title">
+              บัญชีของฉัน (My Account)
+            </h2>
+            <p class="text-slate-500 text-sm" data-i18n="acc_desc">
+              จัดการข้อมูลส่วนตัว สมาชิก VIP และความปลอดภัยบัญชี
+            </p>
+          </div>
+
+          <div
+            class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6"
+          >
+            <div
+              class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-purple-700 to-violet-500 text-white flex items-center justify-center font-bold text-4xl shadow-lg shrink-0"
+            >
+              นจ
+            </div>
+            <div class="flex-1 space-y-2 text-center md:text-left w-full">
+              <div
+                class="flex flex-col md:flex-row justify-between items-center gap-2"
+              >
+                <div>
+                  <h3
+                    class="text-xl font-bold text-slate-900"
+                    data-i18n="user_name"
+                  >
+                    คุณนรินทร์ ใจดี
+                  </h3>
+                  <p class="text-xs text-purple-600 font-semibold">
+                    Member ID: CUST-8812 |
+                    <span
+                      class="px-2 py-0.5 bg-amber-100 text-amber-800 rounded font-bold"
+                      data-i18n="vip_badge"
+                      >Gold VIP Member</span
+                    >
+                  </p>
+                </div>
+                <button
+                  onclick="showToast('บันทึกข้อมูลโปรไฟล์เรียบร้อย')"
+                  class="px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-xl shadow hover:bg-purple-700"
+                  data-i18n="btn_save_profile"
+                >
+                  <i class="fa-solid fa-floppy-disk mr-1"></i> บันทึกการแก้ไข
+                </button>
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-600 pt-3 border-t"
+              >
+                <div>
+                  <strong data-i18n="lbl_phone">เบอร์โทรศัพท์:</strong>
+                  <input
+                    type="text"
+                    value="089-999-8888"
+                    class="border rounded-lg px-2 py-1 ml-2 text-slate-800 font-medium"
+                  />
+                </div>
+                <div>
+                  <strong data-i18n="lbl_email">อีเมลบัญชี:</strong>
+                  <input
+                    type="email"
+                    value="narin.jai@gmail.com"
+                    class="border rounded-lg px-2 py-1 ml-2 text-slate-800 font-medium"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div
+              class="bg-white p-6 rounded-2xl border shadow-sm space-y-4 text-xs"
+            >
+              <h3
+                class="font-bold text-slate-900 text-base border-b pb-2"
+                data-i18n="sec_title"
+              >
+                <i class="fa-solid fa-shield-halved text-purple-600 mr-2"></i>
+                ความปลอดภัยรหัสผ่าน
+              </h3>
+              <div>
+                <label class="block font-semibold mb-1" data-i18n="curr_pass"
+                  >รหัสผ่านปัจจุบัน</label
+                ><input
+                  type="password"
+                  value="********"
+                  class="w-full border rounded-xl p-2.5"
+                />
+              </div>
+              <div>
+                <label class="block font-semibold mb-1" data-i18n="new_pass"
+                  >รหัสผ่านใหม่</label
+                ><input
+                  type="password"
+                  placeholder="••••••••"
+                  class="w-full border rounded-xl p-2.5"
+                />
+              </div>
+              <button
+                onclick="showToast('เปลี่ยนรหัสผ่านสำเร็จ')"
+                class="px-4 py-2 bg-slate-900 text-white font-bold rounded-xl"
+                data-i18n="btn_update_pass"
+              >
+                อัปเดตรหัสผ่าน
+              </button>
+            </div>
+            <div
+              class="bg-white p-6 rounded-2xl border shadow-sm space-y-4 text-xs"
+            >
+              <h3
+                class="font-bold text-slate-900 text-base border-b pb-2"
+                data-i18n="notif_set_title"
+              >
+                <i class="fa-solid fa-bell text-purple-600 mr-2"></i>
+                การตั้งค่าการแจ้งเตือน
+              </h3>
+              <label class="flex items-center space-x-3 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  checked
+                  class="w-4 h-4 text-purple-600 rounded"
+                /><span data-i18n="ns_sms"
+                  >แจ้งเตือนสถานะช่างเดินทางผ่าน SMS</span
+                ></label
+              >
+              <label class="flex items-center space-x-3 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  checked
+                  class="w-4 h-4 text-purple-600 rounded"
+                /><span data-i18n="ns_clean"
+                  >แจ้งเตือนรอบล้างแอร์อัตโนมัติทุก 6 เดือน</span
+                ></label
+              >
+              <label class="flex items-center space-x-3 cursor-pointer"
+                ><input
+                  type="checkbox"
+                  class="w-4 h-4 text-purple-600 rounded"
+                /><span data-i18n="ns_promo"
+                  >รับข่าวสารโปรโมชั่นส่วนลดพิเศษทางอีเมล</span
+                ></label
+              >
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- MODAL: ประเมินความพึงพอใจช่าง -->
+    <div
+      id="modal-review"
+      class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4 text-xs"
+      >
+        <div class="flex justify-between items-center border-b pb-3">
+          <h3
+            class="font-bold text-slate-900 text-base"
+            data-i18n="rev_modal_title"
+          >
+            ประเมินความพึงพอใจการให้บริการ
+          </h3>
+          <button
+            onclick="closeModal('modal-review')"
+            class="text-slate-400 hover:text-rose-500"
+          >
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+        <div class="space-y-3 text-center py-2">
+          <p class="text-slate-600" data-i18n="rev_modal_desc">
+            ให้คะแนนความพึงพอใจช่างวิชัย ช่างทอง
+          </p>
+          <div class="flex justify-center space-x-2 text-2xl text-amber-400">
+            <i class="fa-solid fa-star cursor-pointer"></i>
+            <i class="fa-solid fa-star cursor-pointer"></i>
+            <i class="fa-solid fa-star cursor-pointer"></i>
+            <i class="fa-solid fa-star cursor-pointer"></i>
+            <i class="fa-solid fa-star cursor-pointer"></i>
+          </div>
+          <textarea
+            class="w-full border rounded-xl p-2.5 text-xs mt-2"
+            rows="3"
+            placeholder="เขียนรีวิวการให้บริการ เช่น ช่างสุภาพ ทำงานเรียบร้อย แอร์เย็นฉ่ำ"
+          ></textarea>
+        </div>
+        <div class="flex justify-end space-x-2 pt-2 border-t">
+          <button
+            onclick="closeModal('modal-review')"
+            class="px-4 py-2 border rounded-xl"
+            data-i18n="btn_cancel"
+          >
+            ยกเลิก
+          </button>
+          <button
+            onclick="
+              closeModal('modal-review');
+              showToast('ส่งคะแนนรีวิวสำเร็จ ขอบคุณครับ!');
+            "
+            class="px-4 py-2 bg-purple-600 text-white font-bold rounded-xl"
+            data-i18n="btn_submit_review"
+          >
+            ส่งรีวิว
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLOATING LIVE CHAT WIDGET -->
+    <div class="fixed bottom-6 right-6 z-50">
+      <button
+        onclick="toggleChatBox()"
+        class="w-14 h-14 bg-purple-600 hover:bg-purple-700 text-white rounded-full shadow-2xl flex items-center justify-center text-2xl transition transform hover:scale-105"
+      >
+        <i class="fa-solid fa-comment-dots"></i>
+      </button>
+      <div
+        id="chat-box"
+        class="hidden absolute bottom-16 right-0 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden text-xs"
+      >
+        <div
+          class="bg-slate-900 text-white p-3.5 flex justify-between items-center font-bold"
+        >
+          <span data-i18n="chat_header"
+            >💬 สนทนากับช่างวิชัย & ทีมสนับสนุน</span
+          >
+          <button
+            onclick="toggleChatBox()"
+            class="text-slate-400 hover:text-white"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="p-3 h-64 overflow-y-auto space-y-3 bg-slate-50">
+          <div
+            class="bg-purple-100 p-2.5 rounded-xl max-w-[80%] text-slate-800"
+            data-i18n="chat_msg1"
+          >
+            สวัสดีครับคุณนรินทร์ ช่างวิชัยกำลังเดินทางไปถึงหน้างานในอีก 15
+            นาทีครับผม
+          </div>
+          <div
+            class="bg-white p-2.5 rounded-xl max-w-[80%] ml-auto border shadow-sm text-slate-800"
+            data-i18n="chat_msg2"
+          >
+            รับทราบครับ ทางเข้าหมู่บ้านแลนด์แอนด์เฮ้าส์ รบกวนโทรแจ้งได้เลยครับ
+          </div>
+        </div>
+        <div class="p-3 bg-white border-t flex space-x-2">
+          <input
+            type="text"
+            placeholder="พิมพ์ข้อความ..."
+            class="flex-1 border rounded-xl px-3 py-2"
+          />
+          <button
+            onclick="showToast('ส่งข้อความสำเร็จ')"
+            class="px-4 py-2 bg-purple-600 text-white font-bold rounded-xl"
+            data-i18n="chat_send"
+          >
+            ส่ง
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div
+      id="toast-modal"
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform opacity-0 translate-y-4 pointer-events-none"
+    >
+      <div
+        class="bg-slate-900/95 text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex items-center space-x-3 text-xs font-semibold"
+      >
+        <div
+          class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center"
+        >
+          <i class="fa-solid fa-check"></i>
+        </div>
+        <span id="toast-message">Success</span>
+      </div>
+    </div>
+
+    <!-- SCRIPT LOGIC WITH COMPREHENSIVE I18N & API FETCH -->
+    <script>
+      let currentActiveMenuId = "page-customer-home";
+      let currentLang = "th";
+      let toastTimeout;
+
+      const i18nData = {
+        th: {
+          sys_sub: "Customer Service Portal",
+          notif_head: "การแจ้งเตือนงานบริการ",
+          notif_read_all: "อ่านทั้งหมด",
+          notif_msg_title: "ช่างวิชัย กำลังเดินทางไปหน้างาน",
+          notif_msg_desc: "นัดหมายซ่อมแอร์ JOB-202608-001",
+          user_name: "คุณนรินทร์ ใจดี",
+          user_role: "Customer Role",
+          home_badge: "ยินดีต้อนรับสู่ AirCool Pro Service",
+          home_banner_title: "บริการล้าง ซ่อม และติดตั้งแอร์ครบวงจร",
+          home_banner_desc:
+            "จองคื่อง่าย ช่างผู้เชี่ยวชาญได้มาตรฐาน พร้อมติดตามสถานะงานได้แบบ Real-time และตรวจสอบประวัติการรับประกันได้ทันที",
+          btn_book_now: "จองคิวบริการด่วน",
+          rem_title: "แจ้งเตือนรอบล้างแอร์อัตโนมัติ (รอบ 6 เดือน)",
+          rem_desc:
+            "แอร์ห้องนอนใหญ่ (Daikin 12,000 BTU) ถึงรอบกำหนดล้างทำความสะอาดแล้วเพื่อประสิทธิภาพความเย็นสูงสุด",
+          rem_btn: "คลิกจองคิวล้างด่วน",
+          asset_title: "แอร์ที่ลงทะเบียนไว้ในบ้านของคุณ (Registered Assets)",
+          asset_room1: "ห้องนอนใหญ่",
+          asset_room2: "ห้องรับแขก",
+          asset_info1: "Model: DK-99283-2024 | ล้างล่าสุด: 15 ก.พ. 2026",
+          asset_info2: "Model: MS-GN18VJ | ล้างล่าสุด: 10 ม.ค. 2026",
+          asset_btn: "นัดล้างแอร์",
+          card_clean_title: "บริการล้างแอร์มาตรฐาน",
+          card_clean_desc: "ล้างสะอาดล้ำลึก ตรวจเช็คน้ำยาและระบบไฟฟรีทุกครั้ง",
+          card_repair_title: "ซ่อมแซม & เปลี่ยนอะไหล่",
+          card_repair_desc:
+            "วิเคราะห์อาการแม่นยำ อะไหล่แท้พร้อมใบรับประกัน 90 วัน",
+          card_install_title: "ติดตั้งแอร์ใหม่",
+          card_install_desc:
+            "ทีมช่างมืออาชีพติดตั้งเรียบร้อย เก็บงานสะอาดเรียบร้อย",
+          book_page_title: "จองคิวบริการ (ซ่อม / ล้าง / ติดตั้ง)",
+          book_page_desc:
+            "กรอกข้อมูลรายละเอียดสถานที่และเลือกประเภทบริการที่ต้องการ",
+          lbl_service_type: "เลือกประเภทบริการ",
+          opt_clean: "ล้างแอร์บ้าน (Air Cleaning)",
+          opt_repair: "ซ่อมแอร์ / ตรวจเช็กอาการเสีย (Repair)",
+          opt_install: "ติดตั้งแอร์ใหม่ (New Installation)",
+          lbl_date: "วันที่ต้องการนัดหมาย",
+          lbl_time: "ช่วงเวลา",
+          lbl_address: "ที่อยู่หน้างาน / รายละเอียดอาการเสีย",
+          btn_confirm_booking: "ยืนยันการจองคิวบริการ",
+          track_title: "ติดตามสถานะงาน Real-time & ชำระเงินออนไลน์",
+          track_desc:
+            "อัปเดตสถานะการปฏิบัติงานของช่าง พร้อมช่องทางสแกนจ่าย QR Code พร้อมเพย์",
+          track_job_name: "ซ่อมแอร์บ้าน (เปลี่ยนคาปาซิเตอร์)",
+          track_status: "ช่างกำลังปฏิบัติงานหน้างาน (Working)",
+          t_step1: "1. ยืนยันคิวจองสำเร็จ",
+          t_step2: "2. จัดสรรช่าง (วิชัย)",
+          t_step3: "3. กำลังปฏิบัติงาน",
+          t_step4: "4. ชำระเงิน & เสร็จสิ้น",
+          tech_label: "ช่างผู้ให้บริการ",
+          time_label: "เวลานัดหมาย",
+          on_time: "ตรงต่อเวลา",
+          price_label: "ยอดชำระสุทธิ",
+          pay_status: "รอชำระหลังเสร็จงาน",
+          pay_box_title:
+            "ชำระเงินผ่าน QR Code พร้อมเพย์ (PromptPay Online Payment)",
+          bank_acc: "โอนเข้าบัญชี: บริษัท แอร์ดีดี เซอร์วิส แอนด์ แอสเซท จำกัด",
+          upload_slip_lbl: "อัปโหลดสลิปโอนเงินชำระค่าบริการ",
+          btn_confirm_pay: "ยืนยันการชำระเงินออนไลน์",
+          hist_title: "ประวัติการใช้บริการ & ประกัน",
+          hist_desc:
+            "ประวัติใบเสร็จ เอกสารรับประกันอะไหล่ 90 วัน และให้คะแนนความพึงพอใจ",
+          th_job: "Job No. / วันที่",
+          th_service: "รายการบริการ",
+          th_price: "ยอดเงิน",
+          th_warranty: "สถานะประกัน",
+          th_action: "ดาวน์โหลดใบเสร็จ / ประเมิน",
+          hist_item_desc: "ซ่อมแอร์ & เปลี่ยนคาปาซิเตอร์รัน 45 uF",
+          warranty_badge: "มีประกัน (เหลือ 89 วัน)",
+          btn_review: "ให้คะแนนช่าง",
+          addr_title: "จัดการที่อยู่สถานที่ติดตั้งแอร์ (Multiple Addresses)",
+          addr_desc:
+            "บันทึกที่อยู่บ้านพัก คอนโด หรือสำนักงานเพื่อความสะดวกในการจองคิว",
+          btn_add_addr: "+ เพิ่มที่อยู่ใหม่",
+          form_addr_title: "กรอกรายละเอียดที่อยู่ติดตั้งแอร์ใหม่",
+          f_lbl_name: "ชื่อสถานที่ / โซนบ้าน (เช่น บ้านแม่, คอนโดสุขุมวิท)",
+          f_lbl_phone: "เบอร์โทรศัพท์ติดต่อประจำจุด",
+          f_lbl_detail: "บ้านเลขที่ / ซอย / ถนน",
+          f_lbl_sub: "ตำบล / แขวง",
+          f_lbl_dist: "อำเภอ / เขต",
+          f_lbl_prov: "จังหวัด / รหัสไปรษณีย์",
+          btn_cancel: "ยกเลิก",
+          btn_save_addr: "บันทึกที่อยู่ใหม่",
+          addr_default_tag: "ที่อยู่หลัก (Default)",
+          addr_condo_tag: "คอนโดส่วนตัว",
+          acc_title: "บัญชีของฉัน (My Account)",
+          acc_desc: "จัดการข้อมูลส่วนตัว สมาชิก VIP และความปลอดภัยบัญชี",
+          vip_badge: "Gold VIP Member",
+          btn_save_profile: "บันทึกการแก้ไข",
+          lbl_phone: "เบอร์โทรศัพท์:",
+          lbl_email: "อีเมลบัญชี:",
+          sec_title: "ความปลอดภัยรหัสผ่าน",
+          curr_pass: "รหัสผ่านปัจจุบัน",
+          new_pass: "รหัสผ่านใหม่",
+          btn_update_pass: "อัปเดตรหัสผ่าน",
+          notif_set_title: "การตั้งค่าการแจ้งเตือน",
+          ns_sms: "แจ้งเตือนสถานะช่างเดินทางผ่าน SMS",
+          ns_clean: "แจ้งเตือนรอบล้างแอร์อัตโนมัติทุก 6 เดือน",
+          ns_promo: "รับข่าวสารโปรโมชั่นส่วนลดพิเศษทางอีเมล",
+          rev_modal_title: "ประเมินความพึงพอใจการให้บริการ",
+          rev_modal_desc: "ให้คะแนนความพึงพอใจช่างวิชัย ช่างทอง",
+          btn_submit_review: "ส่งรีวิว",
+          chat_header: "💬 สนทนากับช่างวิชัย & ทีมสนับสนุน",
+          chat_msg1:
+            "สวัสดีครับคุณนรินทร์ ช่างวิชัยกำลังเดินทางไปถึงหน้างานในอีก 15 นาทีครับผม",
+          chat_msg2:
+            "รับทราบครับ ทางเข้าหมู่บ้านแลนด์แอนด์เฮ้าส์ รบกวนโทรแจ้งได้เลยครับ",
+          chat_send: "ส่ง",
+        },
+        en: {
+          sys_sub: "Customer Service Portal",
+          notif_head: "Service Notifications",
+          notif_read_all: "Mark all as read",
+          notif_msg_title: "Technician Wichai is on the way",
+          notif_msg_desc: "AC Repair Appointment JOB-202608-001",
+          user_name: "Narin Jaidee",
+          user_role: "Customer Role",
+          home_badge: "Welcome to AirCool Pro Service",
+          home_banner_title: "Complete Air Conditioning Services",
+          home_banner_desc:
+            "Easy booking, certified expert technicians, real-time job tracking, and warranty history.",
+          btn_book_now: "Book Service Now",
+          rem_title: "Automatic AC Cleaning Reminder (6-Month Cycle)",
+          rem_desc:
+            "Master bedroom AC (Daikin 12,000 BTU) is due for cleaning to maintain optimal cooling efficiency.",
+          rem_btn: "Book Cleaning Now",
+          asset_title: "Registered Assets in Your Home",
+          asset_room1: "Master Bedroom",
+          asset_room2: "Living Room",
+          asset_info1: "Model: DK-99283-2024 | Last Cleaned: Feb 15, 2026",
+          asset_info2: "Model: MS-GN18VJ | Last Cleaned: Jan 10, 2026",
+          asset_btn: "Book Cleaning",
+          card_clean_title: "Standard AC Cleaning",
+          card_clean_desc:
+            "Deep cleaning with free coolant and electrical check.",
+          card_repair_title: "Repair & Parts Replacement",
+          card_repair_desc:
+            "Accurate diagnosis with genuine parts and 90-day warranty.",
+          card_install_title: "New AC Installation",
+          card_install_desc:
+            "Professional installation with clean workspace finish.",
+          book_page_title: "Book Service (Repair / Clean / Install)",
+          book_page_desc:
+            "Fill in location details and select your required service type.",
+          lbl_service_type: "Select Service Type",
+          opt_clean: "AC Cleaning",
+          opt_repair: "AC Repair & Diagnosis",
+          opt_install: "New AC Installation",
+          lbl_date: "Appointment Date",
+          lbl_time: "Time Slot",
+          lbl_address: "Site Address / Symptom Details",
+          btn_confirm_booking: "Confirm Service Booking",
+          track_title: "Real-time Tracking & Online Payment",
+          track_desc:
+            "Track technician status with PromptPay QR Code online payment.",
+          track_job_name: "AC Repair (Capacitor Replacement)",
+          track_status: "Technician Working on Site",
+          t_step1: "1. Booking Confirmed",
+          t_step2: "2. Assign Tech (Wichai)",
+          t_step3: "3. Working on Site",
+          t_step4: "4. Payment & Completed",
+          tech_label: "Service Technician",
+          time_label: "Appointment Time",
+          on_time: "On Time",
+          price_label: "Net Total",
+          pay_status: "Pending Payment",
+          pay_box_title: "PromptPay QR Code Online Payment",
+          bank_acc: "Transfer to: AirDD Service & Asset Co., Ltd.",
+          upload_slip_lbl: "Upload Payment Slip",
+          btn_confirm_pay: "Confirm Online Payment",
+          hist_title: "Service History & Warranty",
+          hist_desc:
+            "Receipt history, 90-day parts warranty, and customer satisfaction rating.",
+          th_job: "Job No. / Date",
+          th_service: "Service Item",
+          th_price: "Total",
+          th_warranty: "Warranty Status",
+          th_action: "Receipt / Review",
+          hist_item_desc: "AC Repair & 45 uF Run Capacitor Replacement",
+          warranty_badge: "Under Warranty (89 days left)",
+          btn_review: "Rate Technician",
+          addr_title: "Manage Installation Addresses",
+          addr_desc:
+            "Save home, condo, or office addresses for convenient future bookings.",
+          btn_add_addr: "+ Add New Address",
+          form_addr_title: "Enter New AC Installation Address",
+          f_lbl_name: "Location Name / Zone (e.g. Mom's House)",
+          f_lbl_phone: "Contact Phone Number",
+          f_lbl_detail: "House No. / Alley / Street",
+          f_lbl_sub: "Sub-district",
+          f_lbl_dist: "District",
+          f_lbl_prov: "Province / Postal Code",
+          btn_cancel: "Cancel",
+          btn_save_addr: "Save Address",
+          addr_default_tag: "Default Address",
+          addr_condo_tag: "Private Condo",
+          acc_title: "My Account",
+          acc_desc:
+            "Manage personal information, VIP status, and account security.",
+          vip_badge: "Gold VIP Member",
+          btn_save_profile: "Save Changes",
+          lbl_phone: "Phone Number:",
+          lbl_email: "Account Email:",
+          sec_title: "Password Security",
+          curr_pass: "Current Password",
+          new_pass: "New Password",
+          btn_update_pass: "Update Password",
+          notif_set_title: "Notification Settings",
+          ns_sms: "SMS notifications for technician travel status",
+          ns_clean: "Automatic 6-month AC cleaning reminder",
+          ns_promo: "Receive promotional discounts via email",
+          rev_modal_title: "Service Satisfaction Rating",
+          rev_modal_desc: "Rate your satisfaction with technician Wichai",
+          btn_submit_review: "Submit Review",
+          chat_header: "💬 Chat with Tech Wichai & Support",
+          chat_msg1:
+            "Hello Khun Narin, technician Wichai will arrive at your location in about 15 minutes.",
+          chat_msg2:
+            "Understood. Land and Houses village entrance, please call when you arrive.",
+          chat_send: "Send",
+        },
+      };
+
+      const customerMenus = [
+        {
+          id: "page-customer-home",
+          icon: "fa-house",
+          label_th: "หน้าแรก / บริการของเรา",
+          label_en: "Home / Services",
+        },
+        {
+          id: "page-customer-booking",
+          icon: "fa-calendar-days",
+          label_th: "จองคิวบริการ (ซ่อม/ล้าง/ติดตั้ง)",
+          label_en: "Book Service",
+        },
+        {
+          id: "page-customer-tracking",
+          icon: "fa-magnifying-glass-location",
+          label_th: "ติดตามสถานะงาน Real-time",
+          label_en: "Real-time Tracking",
+        },
+        {
+          id: "page-customer-history",
+          icon: "fa-file-lines",
+          label_th: "ประวัติการใช้บริการ & ประกัน",
+          label_en: "History & Warranty",
+        },
+        {
+          id: "page-customer-address",
+          icon: "fa-location-dot",
+          label_th: "จัดการที่อยู่สถานที่ติดตั้งแอร์",
+          label_en: "Manage Addresses",
+        },
+        {
+          id: "page-customer-account",
+          icon: "fa-user-gear",
+          label_th: "บัญชีของฉัน",
+          label_en: "My Account",
+        },
+      ];
+
+      function toggleMobileSidebar() {
+        document
+          .getElementById("main-sidebar")
+          .classList.toggle("-translate-x-full");
+      }
+
+      function showToast(message) {
+        const toast = document.getElementById("toast-modal");
+        document.getElementById("toast-message").innerText = message;
+        toast.classList.remove(
+          "opacity-0",
+          "translate-y-4",
+          "pointer-events-none",
+        );
+        toast.classList.add("opacity-100", "translate-y-0");
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove("opacity-100", "translate-y-0");
+          toast.classList.add(
+            "opacity-0",
+            "translate-y-4",
+            "pointer-events-none",
+          );
+        }, 2200);
+      }
+
+      function showPage(pageId) {
+        currentActiveMenuId = pageId;
+        const pages = [
+          "page-customer-home",
+          "page-customer-booking",
+          "page-customer-tracking",
+          "page-customer-history",
+          "page-customer-address",
+          "page-customer-account",
+        ];
+        pages.forEach((id) => {
+          document.getElementById(id).classList.toggle("hidden", id !== pageId);
+        });
+        renderSidebar();
+
+        if (pageId === "page-customer-home") loadCustomerAssets();
+
+        if (window.innerWidth < 768) {
+          document
+            .getElementById("main-sidebar")
+            .classList.add("-translate-x-full");
+        }
+      }
+
+      function renderSidebar() {
+        const nav = document.getElementById("sidebar-nav");
+        if (!nav) return;
+        nav.innerHTML = customerMenus
+          .map((item) => {
+            const isActive = currentActiveMenuId === item.id;
+            const labelText =
+              currentLang === "th" ? item.label_th : item.label_en;
+            return `
+          <button onclick="showPage('${item.id}')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium ${isActive ? "bg-purple-600 text-white shadow-md" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"} transition-all duration-200">
+            <i class="fa-solid ${item.icon} w-5 text-sm"></i><span class="truncate">${labelText}</span>
+          </button>
+        `;
+          })
+          .join("");
+      }
+
+      function toggleLang() {
+        currentLang = currentLang === "th" ? "en" : "th";
+        document.getElementById("lang-indicator").innerText =
+          currentLang === "th" ? "TH | EN" : "EN | TH";
+
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          if (i18nData[currentLang][key]) {
+            el.innerHTML = i18nData[currentLang][key];
+          }
+        });
+        renderSidebar();
+        showToast(
+          currentLang === "th"
+            ? "เปลี่ยนเป็นภาษาไทยเรียบร้อย"
+            : "Switched to English",
+        );
+      }
+
+      // ==========================================
+      // API FETCH FUNCTIONS (CUSTOMER PORTAL)
+      // ==========================================
+
+      async function loadCustomerAssets() {
+        const customerCode =
+          localStorage.getItem("aircool_user_code") || "CUST-8812";
+        try {
+          const res = await fetch(
+            `http://localhost:3000/api/customer/assets/${customerCode}`,
+          );
+          const assets = await res.json();
+          const container = document.getElementById(
+            "customer-assets-container",
+          );
+          if (!container) return;
+
+          if (Array.isArray(assets) && assets.length > 0) {
+            container.innerHTML = assets
+              .map(
+                (item) => `
+              <div class="p-4 rounded-xl border border-purple-100 bg-purple-50/40 flex items-center justify-between">
+                <div>
+                  <span class="px-2 py-0.5 bg-purple-200 text-purple-800 rounded font-bold text-[10px]">${item.room_location || "ห้องทั่วไป"}</span>
+                  <h4 class="font-bold text-slate-900 text-sm mt-1">${item.model_name}</h4>
+                  <p class="text-xs text-slate-500">Asset ID: ${item.asset_code} | ล้างล่าสุด: ${item.last_cleaned_date || "ยังไม่มีข้อมูล"}</p>
+                </div>
+                <button onclick="showPage('page-customer-booking')" class="px-3 py-1.5 bg-purple-600 text-white rounded-lg text-xs font-bold">นัดล้างแอร์</button>
+              </div>
+            `,
+              )
+              .join("");
+          }
+        } catch (err) {
+          console.error("Error loading customer assets:", err);
+        }
+      }
+
+      async function handleBookingSubmit(e) {
+        e.preventDefault();
+        const service_type = document.getElementById(
+          "booking-service-type",
+        ).value;
+        const booking_date = document.getElementById("booking-date").value;
+        const time_slot = document.getElementById("booking-timeslot").value;
+        const site_address = document.getElementById("booking-address").value;
+
+        const bookingData = {
+          booking_code: "BOOK-" + Math.floor(Math.random() * 90000 + 10000),
+          customer_id: 1, // หรือไอดีลูกค้าตามจริง
+          service_type,
+          booking_date,
+          time_slot,
+          site_address,
+        };
+
+        try {
+          const res = await fetch(
+            "http://localhost:3000/api/customer/bookings",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(bookingData),
+            },
+          );
+          const result = await res.json();
+          if (result.success) {
+            showToast(
+              currentLang === "th"
+                ? "จองคิวบริการสำเร็จ!"
+                : "Booking successful!",
+            );
+            showPage("page-customer-tracking");
+          } else {
+            showToast("เกิดข้อผิดพลาดในการจอง", "danger");
+          }
+        } catch (err) {
+          console.error("Error submitting booking:", err);
+          showToast("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", "danger");
+        }
+      }
+
+      function openAddAddressModal() {
+        document.getElementById("box-add-address").classList.remove("hidden");
+      }
+
+      function closeAddAddressModal() {
+        document.getElementById("box-add-address").classList.add("hidden");
+      }
+
+      async function handleSaveNewAddress(e) {
+        e.preventDefault();
+        const zone_name = document.getElementById("new-addr-name").value;
+        const phone_contact = document.getElementById("new-addr-phone").value;
+        const address_detail = document.getElementById("new-addr-detail").value;
+
+        const addressData = {
+          customer_id: 1,
+          zone_name,
+          address_detail,
+          phone_contact,
+        };
+
+        try {
+          const res = await fetch(
+            "http://localhost:3000/api/customer/addresses",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(addressData),
+            },
+          );
+          const result = await res.json();
+          if (result.success) {
+            showToast(
+              currentLang === "th"
+                ? "บันทึกที่อยู่ใหม่สำเร็จ!"
+                : "New address saved successfully!",
+            );
+            closeAddAddressModal();
+
+            // เพิ่มการแสดงผลลงตารางหน้าบ้านทันที
+            const grid = document.getElementById("address-grid-list");
+            const newCard = document.createElement("div");
+            newCard.className =
+              "bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3";
+            newCard.innerHTML = `
+              <div class="flex justify-between items-center">
+                <span class="px-2.5 py-0.5 bg-slate-100 text-slate-700 rounded-full font-bold text-xs">${zone_name}</span>
+                <button class="text-slate-400 hover:text-rose-600 text-xs" onclick="this.closest('div.bg-white').remove()"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+              <h3 class="font-bold text-slate-900 text-sm">${zone_name}</h3>
+              <p class="text-xs text-slate-500">${address_detail} | Tel: ${phone_contact}</p>
+            `;
+            grid.prepend(newCard);
+          }
+        } catch (err) {
+          console.error("Error saving address:", err);
+        }
+      }
+
+      function toggleNotifDropdown() {
+        document.getElementById("notif-dropdown").classList.toggle("hidden");
+      }
+      function clearNotif() {
+        document.getElementById("notif-badge")?.classList.add("hidden");
+        document.getElementById("notif-ping")?.classList.add("hidden");
+        showToast(
+          currentLang === "th"
+            ? "อ่านการแจ้งเตือนทั้งหมดแล้ว"
+            : "All notifications marked as read",
+        );
+      }
+
+      function toggleChatBox() {
+        document.getElementById("chat-box").classList.toggle("hidden");
+      }
+
+      function openReviewModal() {
+        document.getElementById("modal-review").classList.remove("hidden");
+      }
+
+      function closeModal(id) {
+        document.getElementById(id).classList.add("hidden");
+      }
+
+      function logout() {
+        window.location.href = "login.html";
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        renderSidebar();
+        loadCustomerAssets();
+      });
+    </script>
+  </body>
+</html>
+c
