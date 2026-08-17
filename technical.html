@@ -1,0 +1,2290 @@
+<!doctype html>
+<html lang="th" class="h-full bg-slate-50">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AirCool Pro - Service & Asset Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts (Kanit) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: { sans: ["Kanit", "sans-serif"] },
+            colors: {
+              brand: {
+                50: "#f5f3ff",
+                600: "#7c3aed",
+                700: "#6d28d9",
+                900: "#0f172a",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #printable-area,
+        #printable-area * {
+          visibility: visible;
+        }
+        #printable-area {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          padding: 0;
+          margin: 0;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body
+    class="h-full font-sans antialiased text-slate-800 flex flex-col relative overflow-x-hidden"
+  >
+    <!-- TOP NAVBAR -->
+    <header
+      class="bg-slate-900 border-b border-purple-900/40 text-white sticky top-0 z-40 no-print"
+    >
+      <div class="px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <button
+            onclick="toggleMobileSidebar()"
+            class="md:hidden text-slate-300 hover:text-white p-1.5 text-lg"
+          >
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <div
+            class="flex items-center space-x-3 cursor-pointer"
+            onclick="showPage('page-tech-dashboard')"
+          >
+            <div
+              class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-violet-400 flex items-center justify-center text-white shadow-lg shadow-purple-900/50"
+            >
+              <i class="fa-solid font-bold fa-snowflake text-lg sm:text-xl"></i>
+            </div>
+            <div>
+              <h1
+                class="font-bold text-base sm:text-lg leading-tight tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-purple-300"
+              >
+                AirCool Pro
+              </h1>
+              <p
+                class="text-[9px] sm:text-[10px] text-purple-300 font-light tracking-wider uppercase"
+              >
+                Service & Asset System
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 sm:space-x-4">
+          <div
+            id="network-status-badge"
+            class="hidden sm:flex items-center space-x-1.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-xs font-semibold"
+          >
+            <span
+              class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"
+            ></span>
+            <span id="network-text">Online (Synced)</span>
+          </div>
+
+          <button
+            onclick="toggleLang()"
+            class="flex items-center space-x-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1.5 rounded-lg text-xs border border-slate-700 transition"
+          >
+            <i class="fa-solid fa-globe text-purple-400"></i>
+            <span id="lang-indicator" class="font-semibold">TH | EN</span>
+          </button>
+
+          <div class="relative">
+            <button
+              onclick="toggleNotifDropdown()"
+              class="relative p-2 text-slate-300 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            >
+              <i class="fa-regular fa-bell text-lg"></i>
+              <span
+                class="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full animate-ping"
+              ></span>
+              <span
+                class="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full"
+              ></span>
+            </button>
+            <div
+              id="notif-dropdown"
+              class="hidden absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 text-slate-800 z-50 overflow-hidden"
+            >
+              <div
+                class="p-3 bg-slate-900 text-white flex justify-between items-center text-xs font-bold"
+              >
+                <span>การแจ้งเตือนระบบ</span>
+                <button
+                  onclick="clearNotif()"
+                  class="text-[10px] text-purple-300 hover:underline"
+                >
+                  อ่านทั้งหมด
+                </button>
+              </div>
+              <div
+                class="divide-y divide-slate-100 text-xs max-h-64 overflow-y-auto"
+              >
+                <div class="p-3 hover:bg-purple-50 transition cursor-pointer">
+                  <p class="font-semibold text-purple-900">
+                    คิวงานใหม่ JOB-202608-001
+                  </p>
+                  <p class="text-slate-500 text-[11px] mt-0.5">
+                    ลูกค้า คุณนรินทร์ นัดหมาย 10:00 น.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center space-x-2 sm:space-x-3 border-l border-slate-700 pl-3 sm:pl-4"
+          >
+            <div
+              class="w-8 h-8 rounded-full bg-purple-600 border border-purple-400 flex items-center justify-center font-bold text-xs"
+              id="user-avatar"
+            >
+              WC
+            </div>
+            <div class="hidden lg:block text-left">
+              <p
+                class="text-xs font-semibold leading-none text-slate-200"
+                id="user-display-name"
+              >
+                วิชัย ช่างทอง
+              </p>
+              <span
+                class="inline-block px-2 py-0.5 mt-1 text-[10px] font-bold rounded-md bg-purple-900/80 text-purple-200 border border-purple-700/50"
+                >Technician Role</span
+              >
+            </div>
+            <button
+              onclick="logout()"
+              title="ออกจากระบบ"
+              class="text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-800 transition"
+            >
+              <i class="fa-solid fa-right-from-bracket text-sm"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+      <!-- SIDEBAR MENU -->
+      <aside
+        id="main-sidebar"
+        class="w-64 bg-slate-900 text-slate-300 flex flex-col justify-between shrink-0 no-print border-r border-slate-800 absolute md:relative z-30 h-full transition-transform duration-300 transform -translate-x-full md:translate-x-0"
+      >
+        <div class="p-4 space-y-5 overflow-y-auto">
+          <div
+            class="bg-gradient-to-r from-purple-950 to-slate-800 p-3 rounded-xl border border-purple-800/40"
+          >
+            <div class="text-[11px] text-purple-300 font-medium">
+              Role Mode: Technician
+            </div>
+            <div class="text-xs font-light text-slate-300 mt-0.5">
+              Data Scope: My Orders Only
+            </div>
+          </div>
+          <nav class="space-y-1" id="sidebar-nav"></nav>
+        </div>
+        <div
+          class="p-4 border-t border-slate-800 text-xs text-slate-500 flex items-center justify-between"
+        >
+          <span>AirCool v2.5 (i18n)</span>
+          <i class="fa-solid fa-shield-halved text-purple-400"></i>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT AREA -->
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50 w-full">
+        <!-- TECH PAGE 1: MY DASHBOARD -->
+        <section id="page-tech-dashboard" class="space-y-6">
+          <div
+            class="flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          >
+            <div>
+              <h2
+                class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight"
+              >
+                Dashboard ผลงานของฉัน
+              </h2>
+              <p class="text-slate-500 text-xs sm:text-sm">
+                สรุปงานซ่อมและคอมมิชชันสะสมประจำเดือน (Data Isolation Enabled)
+              </p>
+            </div>
+            <span
+              class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 w-fit"
+            >
+              <i
+                class="fa-solid fa-circle text-[8px] mr-1.5 text-purple-600"
+              ></i>
+              <span>ช่างประจำการ: วิชัย (ID: 002)</span>
+            </span>
+          </div>
+
+          <!-- 4 KPI CARDS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div
+              class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"
+            >
+              <div>
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase">
+                      คิวงานวันนี้
+                    </p>
+                    <h3 class="text-2xl font-bold text-slate-900 mt-1">
+                      3
+                      <span class="text-sm font-normal text-slate-500"
+                        >งาน</span
+                      >
+                    </h3>
+                  </div>
+                  <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                    <i class="fa-solid fa-calendar-check text-xl"></i>
+                  </div>
+                </div>
+                <span class="text-xs text-emerald-600 font-medium mt-2 block"
+                  ><i class="fa-solid fa-arrow-trend-up"></i> ตรงตามตาราง
+                  100%</span
+                >
+              </div>
+              <div
+                class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500"
+              >
+                <span>ดูกราฟ:</span>
+                <div class="flex space-x-1">
+                  <button
+                    onclick="renderAnalyticsChart('jobs', 'table')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    ตาราง
+                  </button>
+                  <button
+                    onclick="renderAnalyticsChart('jobs', 'bar')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    แท่ง
+                  </button>
+                  <button
+                    onclick="renderAnalyticsChart('jobs', 'pie')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    วงกลม
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"
+            >
+              <div>
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase">
+                      คอมมิชชันเดือนนี้
+                    </p>
+                    <h3 class="text-2xl font-bold text-purple-700 mt-1">
+                      ฿4,850.00
+                    </h3>
+                  </div>
+                  <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                    <i class="fa-solid fa-sack-dollar text-xl"></i>
+                  </div>
+                </div>
+                <span class="text-xs text-purple-600 font-medium mt-2 block"
+                  >สะสม 18 งานเสร็จสิ้น</span
+                >
+              </div>
+              <div
+                class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500"
+              >
+                <span>ดูกราฟ:</span>
+                <div class="flex space-x-1">
+                  <button
+                    onclick="renderAnalyticsChart('commission', 'table')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    ตาราง
+                  </button>
+                  <button
+                    onclick="renderAnalyticsChart('commission', 'bar')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    แท่ง
+                  </button>
+                  <button
+                    onclick="renderAnalyticsChart('commission', 'pie')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    วงกลม
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"
+            >
+              <div>
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase">
+                      เบิกค่าน้ำมันค้าง
+                    </p>
+                    <h3 class="text-2xl font-bold text-amber-600 mt-1">
+                      ฿180.00
+                    </h3>
+                  </div>
+                  <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                    <i class="fa-solid fa-gas-pump text-xl"></i>
+                  </div>
+                </div>
+                <span class="text-xs text-slate-500 mt-2 block"
+                  >รอ Admin ตรวจสอบ</span
+                >
+              </div>
+              <div
+                class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500"
+              >
+                <span>ดูกราฟ:</span>
+                <div class="flex space-x-1">
+                  <button
+                    onclick="renderAnalyticsChart('fuel', 'table')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    ตาราง
+                  </button>
+                  <button
+                    onclick="renderAnalyticsChart('fuel', 'bar')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    แท่ง
+                  </button>
+                  <button
+                    onclick="renderAnalyticsChart('fuel', 'pie')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    วงกลม
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"
+            >
+              <div>
+                <div class="flex justify-between items-start">
+                  <div>
+                    <p class="text-xs font-semibold text-slate-500 uppercase">
+                      คะแนนรีวิวลูกค้า
+                    </p>
+                    <h3 class="text-2xl font-bold text-slate-900 mt-1">
+                      4.95 / 5.0
+                    </h3>
+                  </div>
+                  <div class="p-3 bg-amber-50 text-amber-500 rounded-xl">
+                    <i class="fa-solid fa-star text-xl"></i>
+                  </div>
+                </div>
+                <span class="text-xs text-emerald-600 font-medium mt-2 block"
+                  ><i class="fa-solid fa-thumbs-up"></i> ระดับยอดเยี่ยม</span
+                >
+              </div>
+              <div
+                class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500"
+              >
+                <span>ดูกราฟ:</span>
+                <div class="flex space-x-1">
+                  <button
+                    onclick="renderAnalyticsChart('rating', 'table')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    ตาราง
+                  </button>
+                  <button
+                    onclick="renderAnalyticsChart('rating', 'bar')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    แท่ง
+                  </button>
+                  <button
+                    onclick="renderAnalyticsChart('rating', 'pie')"
+                    class="px-2 py-0.5 bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-700 rounded font-bold"
+                  >
+                    วงกลม
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="analytics-modal-card"
+            class="hidden bg-white p-5 rounded-2xl border border-purple-200 shadow-md space-y-4"
+          >
+            <div
+              class="flex justify-between items-center border-b border-slate-100 pb-3"
+            >
+              <h3
+                id="analytics-title"
+                class="font-bold text-purple-900 text-sm sm:text-base"
+              >
+                รายงานการวิเคราะห์สถิติ
+              </h3>
+              <button
+                onclick="closeAnalyticsCard()"
+                class="text-slate-400 hover:text-rose-500 text-sm"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+            <div
+              id="analytics-content-container"
+              class="min-h-[200px] flex items-center justify-center"
+            ></div>
+          </div>
+
+          <!-- TODAY'S JOB ORDERS TABLE -->
+          <div
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+          >
+            <div
+              class="p-5 border-b border-slate-100 flex justify-between items-center"
+            >
+              <h3 class="font-bold text-slate-900 text-base sm:text-lg">
+                รายการงานซ่อมประจำวันนี้ (My Job Orders)
+              </h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table
+                class="w-full text-left border-collapse text-sm min-w-[600px]"
+              >
+                <thead
+                  class="bg-slate-50 text-slate-500 uppercase text-[11px] font-semibold tracking-wider border-b border-slate-100"
+                >
+                  <tr>
+                    <th class="p-4 w-10 text-center">
+                      <input type="checkbox" onchange="toggleSelectAll(this)" />
+                    </th>
+                    <th class="p-4">JOB NO.</th>
+                    <th class="p-4">ลูกค้า & สถานที่</th>
+                    <th class="p-4">ประเภทบริการ</th>
+                    <th class="p-4">เวลานัดหมาย</th>
+                    <th class="p-4">สถานะงาน</th>
+                    <th class="p-4 text-center">ACTION (ดู/แก้/ลบ)</th>
+                  </tr>
+                </thead>
+                <tbody
+                  id="tech-jobs-tbody"
+                  class="divide-y divide-slate-100 text-slate-700"
+                >
+                  <tr class="hover:bg-slate-50/80 transition">
+                    <td class="p-4 text-center">
+                      <input type="checkbox" class="row-checkbox" />
+                    </td>
+                    <td class="p-4 font-semibold text-purple-700">
+                      JOB-202608-001
+                    </td>
+                    <td class="p-4 font-medium text-slate-900">
+                      คุณนรินทร์ ใจดี
+                      <div class="text-xs text-slate-400">
+                        อ.ลำลูกกา จ.ปทุมธานี
+                      </div>
+                    </td>
+                    <td class="p-4">ซ่อมแอร์ / Air Repair</td>
+                    <td class="p-4">16 ส.ค. 2026 (10:00 น.)</td>
+                    <td class="p-4">
+                      <span
+                        class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700"
+                        >Working</span
+                      >
+                    </td>
+                    <td class="p-4 text-center space-x-2">
+                      <button
+                        onclick="
+                          openViewModal(
+                            'JOB-202608-001',
+                            'คุณนรินทร์ ใจดี',
+                            'ซ่อมแอร์',
+                            '16 ส.ค. 2026',
+                            'Working',
+                          )
+                        "
+                        title="ดูรายละเอียด"
+                        class="p-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded-lg transition"
+                      >
+                        <i class="fa-solid fa-eye text-xs"></i>
+                      </button>
+                      <button
+                        onclick="
+                          openEditModal(
+                            'JOB-202608-001',
+                            'คุณนรินทร์ ใจดี',
+                            'ซ่อมแอร์',
+                            'Working',
+                          )
+                        "
+                        title="แก้ไข"
+                        class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded-lg transition"
+                      >
+                        <i class="fa-solid fa-pen text-xs"></i>
+                      </button>
+                      <button
+                        onclick="openDeleteConfirmModal('JOB-202608-001')"
+                        title="ลบ"
+                        class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg transition"
+                      >
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- JOB DETAIL SCREENING PAGE -->
+        <section id="page-job-detail-screening" class="space-y-6 hidden">
+          <div
+            class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-xs"
+          >
+            <div class="flex items-center space-x-4">
+              <div
+                class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden shrink-0"
+              >
+                <i class="fa-solid fa-user text-slate-500 text-xl"></i>
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="font-bold text-slate-900 text-sm"
+                    >คุณนรินทร์ ใจดี</span
+                  ><span class="text-purple-600 font-medium"
+                    >JOB-202608-001</span
+                  >
+                </div>
+                <div class="text-slate-500 space-x-3 mt-0.5">
+                  <span>P.ID: 23-20121</span><span>16-08-2026 10:10 AM</span
+                  ><span
+                    class="px-2 py-0.5 bg-purple-100 text-purple-700 rounded font-bold"
+                    >On-site</span
+                  >
+                </div>
+              </div>
+            </div>
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=Lam+Luk+Ka+Pathum+Thani"
+              target="_blank"
+              class="px-3.5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow flex items-center space-x-1.5"
+            >
+              <i class="fa-solid fa-diamond-turn-right"></i
+              ><span>นำทางไปด้วย Google Maps</span>
+            </a>
+          </div>
+
+          <div
+            class="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5"
+          >
+            <h3
+              class="font-bold text-slate-900 text-base border-b border-slate-100 pb-3"
+            >
+              สถานะตรวจเช็กระบบความเย็น & ค่าแรงดัน และอัปโหลดรูปภาพหน้างาน
+            </h3>
+
+            <!-- ฟอร์มสำหรับอัปโหลดรูปภาพหน้างานผ่าน API -->
+            <div
+              class="bg-purple-50/50 p-4 rounded-xl border border-purple-100 space-y-3 text-xs"
+            >
+              <h4 class="font-bold text-purple-900 text-sm">
+                อัปโหลดรูปภาพหน้างาน (Before / After)
+              </h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label class="block font-semibold mb-1"
+                    >ลิงก์หรือไฟล์รูป Before:</label
+                  >
+                  <input
+                    type="text"
+                    id="input-before-url"
+                    placeholder="https://example.com/before.jpg"
+                    class="w-full border rounded-xl p-2 bg-white"
+                  />
+                </div>
+                <div>
+                  <label class="block font-semibold mb-1"
+                    >ลิงก์หรือไฟล์รูป After:</label
+                  >
+                  <input
+                    type="text"
+                    id="input-after-url"
+                    placeholder="https://example.com/after.jpg"
+                    class="w-full border rounded-xl p-2 bg-white"
+                  />
+                </div>
+              </div>
+              <div class="flex justify-end pt-2">
+                <button
+                  onclick="handleUploadPhotos('JOB-202608-001')"
+                  class="px-4 py-2 bg-purple-600 text-white font-bold rounded-xl shadow"
+                >
+                  อัปโหลดรูปภาพเข้าสู่ระบบ
+                </button>
+              </div>
+            </div>
+
+            <div
+              class="flex justify-between items-center pt-4 border-t border-slate-100"
+            >
+              <button
+                onclick="showPage('page-tech-dashboard')"
+                class="px-4 py-2 border border-slate-300 rounded-xl text-slate-700 text-xs font-semibold hover:bg-slate-100 transition"
+              >
+                <i class="fa-solid fa-arrow-left mr-1"></i> ย้อนกลับ
+              </button>
+              <button
+                onclick="handleScreeningSaveAndRedirect()"
+                class="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl shadow transition"
+              >
+                บันทึกและดำเนินการต่อ
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TECH PAGE 2: PROFILE & ACCOUNT VIEW (4 กล่อง + ฟังก์ชันตา/ดินสอ/ถังขยะ) -->
+        <section id="page-tech-profile" class="space-y-6 hidden">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">
+              บัญชีส่วนตัว & สรุปรายได้ของฉัน
+            </h2>
+            <p class="text-slate-500 text-sm">
+              ข้อมูลโปรไฟล์พนักงาน ตรวจสอบงานซ่อม และสรุปรายได้สะสมประจำเดือน
+            </p>
+          </div>
+
+          <div
+            class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center md:items-start space-y-4 md:space-y-0 md:space-x-6 no-print"
+          >
+            <div
+              class="w-24 h-24 rounded-2xl bg-gradient-to-tr from-purple-700 to-violet-500 text-white flex items-center justify-center font-bold text-4xl shadow-lg shrink-0"
+            >
+              <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <div class="flex-1 space-y-3 text-center md:text-left w-full">
+              <div>
+                <h3 class="text-xl font-bold text-slate-900">
+                  นายวิชัย ช่างทอง (Wichai Changthong)
+                </h3>
+                <p class="text-xs text-purple-600 font-semibold mt-0.5">
+                  <i class="fa-solid fa-id-badge mr-1"></i
+                  ><span>รหัสพนักงาน:</span> TECH-002 | <span>Senior Tech</span>
+                </p>
+              </div>
+              <div
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs text-slate-600 pt-3 border-t border-slate-100"
+              >
+                <div>
+                  <i class="fa-solid fa-sitemap text-purple-500 mr-2"></i
+                  ><strong>แผนก/สังกัด:</strong> ฝ่ายบริการและซ่อมบำรุง
+                </div>
+                <div>
+                  <i class="fa-solid fa-phone text-purple-500 mr-2"></i
+                  ><strong>เบอร์โทร:</strong> 081-234-5678
+                </div>
+                <div>
+                  <i class="fa-solid fa-envelope text-purple-500 mr-2"></i
+                  ><strong>อีเมล:</strong> wichai.c@aircoolpro.com
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 TABS & DATE FILTER SECTION -->
+          <div
+            class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4"
+          >
+            <div
+              class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-purple-50/50 p-3.5 rounded-xl border border-purple-100 no-print"
+            >
+              <div class="flex items-center space-x-2 w-full sm:w-auto">
+                <i class="fa-solid fa-calendar-days text-purple-600"></i>
+                <span class="text-xs font-bold text-purple-900"
+                  >เลือกช่วงเวลาข้อมูล:</span
+                >
+                <input
+                  type="month"
+                  id="profile-month-filter"
+                  value="2026-08"
+                  onchange="handleFilterChange()"
+                  class="border border-purple-200 rounded-lg px-3 py-1.5 text-xs bg-white font-semibold text-purple-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <div
+                class="text-xs text-slate-500 font-medium"
+                id="filter-result-summary"
+              >
+                แสดงผลประจำเดือน: สิงหาคม 2026
+              </div>
+            </div>
+
+            <!-- 4 TAB BUTTONS -->
+            <div
+              class="flex flex-wrap gap-2 no-print border-b border-slate-100 pb-3"
+            >
+              <button
+                onclick="switchHistoryTab('all')"
+                id="tab-btn-all"
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white shadow transition flex items-center space-x-1.5"
+              >
+                <i class="fa-solid fa-box-archive"></i
+                ><span>1. ข้อมูลทั้งหมด (All)</span>
+              </button>
+              <button
+                onclick="switchHistoryTab('parts')"
+                id="tab-btn-parts"
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-purple-100 transition flex items-center space-x-1.5"
+              >
+                <i class="fa-solid fa-screwdriver-wrench"></i
+                ><span>2. เบิกอะไหล่ (Parts)</span>
+              </button>
+              <button
+                onclick="switchHistoryTab('fuel')"
+                id="tab-btn-fuel"
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-purple-100 transition flex items-center space-x-1.5"
+              >
+                <i class="fa-solid fa-gas-pump"></i
+                ><span>3. เบิกค่าน้ำมัน (Fuel Claim)</span>
+              </button>
+              <button
+                onclick="switchHistoryTab('cash')"
+                id="tab-btn-cash"
+                class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-purple-100 transition flex items-center space-x-1.5"
+              >
+                <i class="fa-solid fa-hand-holding-dollar"></i
+                ><span>4. เบิกเงิน/ค่าแรง (Cash Advance)</span>
+              </button>
+            </div>
+
+            <div class="flex justify-between items-center no-print pt-1">
+              <span
+                class="text-xs font-bold text-slate-700"
+                id="current-box-title"
+                >📦 รายการ: ข้อมูลทั้งหมด</span
+              >
+              <div class="space-x-2">
+                <button
+                  onclick="printSelectedRows()"
+                  class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1 shadow-sm"
+                >
+                  <i class="fa-solid fa-print"></i
+                  ><span>พิมพ์เฉพาะรายการที่เลือก</span>
+                </button>
+                <button
+                  onclick="window.print()"
+                  class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition inline-flex items-center space-x-1"
+                >
+                  <i class="fa-solid fa-print"></i><span>พิมพ์ทั้งหมด</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- PRINTABLE AREA -->
+            <div
+              id="printable-area"
+              class="bg-white p-2 sm:p-4 rounded-xl border border-slate-100 space-y-4"
+            >
+              <div class="hidden print:block border-b-2 border-slate-900 pb-3">
+                <h3 class="text-lg font-bold text-slate-900">
+                  บริษัท แอร์ดีดี เซอร์วิส แอนด์ แอสเซท จำกัด
+                </h3>
+                <p class="text-xs text-slate-600">
+                  รายงานสรุปปฏิบัติการและเบิกจ่ายประจำตัวพนักงาน
+                </p>
+                <p class="text-xs text-slate-600 mt-1">
+                  ช่างผู้ขอเบิก: นายวิชัย ช่างทอง (ID: TECH-002) | รอบเดือน:
+                  <span id="print-month-label">สิงหาคม 2026</span>
+                </p>
+              </div>
+
+              <div class="overflow-x-auto">
+                <table
+                  class="w-full text-left border-collapse text-sm min-w-[650px]"
+                >
+                  <thead
+                    id="profile-table-head"
+                    class="bg-slate-50 text-slate-500 uppercase text-[11px] font-semibold border-b border-slate-100"
+                  ></thead>
+                  <tbody
+                    id="profile-history-table-body"
+                    class="divide-y divide-slate-100 text-slate-700 text-xs"
+                  ></tbody>
+                </table>
+              </div>
+
+              <div
+                class="hidden print:grid grid-cols-2 gap-8 pt-8 text-center text-xs"
+              >
+                <div>
+                  <div
+                    class="pt-8 border-b border-dashed border-slate-400 w-48 mx-auto"
+                  ></div>
+                  <p class="mt-1">
+                    ( นายวิชัย ช่างทอง )<br />ผู้ขอเบิก/ช่างผู้ปฏิบัติงาน
+                  </p>
+                </div>
+                <div>
+                  <div
+                    class="pt-8 border-b border-dashed border-slate-400 w-48 mx-auto"
+                  ></div>
+                  <p class="mt-1">
+                    ( ผู้อนุมัติระบบ )<br />ผู้จัดการฝ่ายบริการ
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TECH PAGE 3: FIELD CASHIER LIST -->
+        <section id="page-tech-cashier-list" class="space-y-6 hidden">
+          <div
+            class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+          >
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900">
+                จัดการการเงิน & เอกสารหน้างาน (Field Cashier)
+              </h2>
+              <p class="text-slate-500 text-sm">
+                เลือกรูปแบบการทำรายการใบเสร็จรับเงินหรือเลือกจากตารางด้านล่าง
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button
+                onclick="showPage('page-invoice')"
+                class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition shadow-md"
+              >
+                <i class="fa-solid fa-receipt mr-1"></i> ดูใบเสร็จรับเงิน
+                (ตามกฎหมายสรรพากร)
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden"
+          >
+            <div class="p-5 border-b border-slate-100">
+              <h3 class="font-bold text-slate-900 text-base">
+                รายการงานซ่อมและเอกสารรับชำระ (Technician Billing Jobs)
+              </h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table
+                class="w-full text-left border-collapse text-sm min-w-[600px]"
+              >
+                <thead
+                  class="bg-slate-50 text-slate-500 uppercase text-[11px] font-semibold border-b border-slate-100"
+                >
+                  <tr>
+                    <th class="p-4 w-10 text-center">
+                      <input type="checkbox" onchange="toggleSelectAll(this)" />
+                    </th>
+                    <th class="p-4">JOB NO.</th>
+                    <th class="p-4">ลูกค้า & สถานที่</th>
+                    <th class="p-4">บริการ</th>
+                    <th class="p-4">ยอดเงินสุทธิ</th>
+                    <th class="p-4">สถานะการชำระ</th>
+                    <th class="p-4 text-center">ACTION (ดู/แก้/ลบ)</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 text-slate-700">
+                  <tr class="hover:bg-slate-50/80 transition">
+                    <td class="p-4 text-center">
+                      <input type="checkbox" class="row-checkbox" />
+                    </td>
+                    <td class="p-4 font-semibold text-purple-700">
+                      JOB-202608-001
+                    </td>
+                    <td class="p-4 font-medium">
+                      คุณนรินทร์ ใจดี
+                      <div class="text-xs text-slate-400">
+                        อ.ลำลูกกา จ.ปทุมธานี
+                      </div>
+                    </td>
+                    <td class="p-4">ซ่อมแอร์ / Air Repair</td>
+                    <td class="p-4 font-bold text-slate-900">฿1,177.00</td>
+                    <td class="p-4">
+                      <span
+                        class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700"
+                        >รอชำระเงิน</span
+                      >
+                    </td>
+                    <td class="p-4 text-center space-x-2">
+                      <button
+                        onclick="
+                          openViewModal(
+                            'JOB-202608-001',
+                            'คุณนรินทร์ ใจดี',
+                            'ซ่อมแอร์',
+                            '16 ส.ค. 2026',
+                            'รอชำระเงิน',
+                          )
+                        "
+                        title="ดูใบเสร็จ"
+                        class="p-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded-lg transition"
+                      >
+                        <i class="fa-solid fa-eye text-xs"></i>
+                      </button>
+                      <button
+                        onclick="
+                          openEditModal(
+                            'JOB-202608-001',
+                            'คุณนรินทร์ ใจดี',
+                            'ซ่อมแอร์',
+                            'รอชำระเงิน',
+                          )
+                        "
+                        title="แก้ไข"
+                        class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded-lg transition"
+                      >
+                        <i class="fa-solid fa-pen text-xs"></i>
+                      </button>
+                      <button
+                        onclick="openDeleteConfirmModal('JOB-202608-001')"
+                        title="ลบ"
+                        class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg transition"
+                      >
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRINTABLE INVOICE SHEET -->
+        <section id="page-invoice" class="space-y-6 hidden">
+          <div
+            class="flex items-center justify-between no-print max-w-4xl mx-auto"
+          >
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900">
+                ใบเสร็จรับเงิน / ใบกำกับภาษีอย่างย่อ (Tax Invoice / Receipt)
+              </h2>
+            </div>
+            <div class="flex space-x-2">
+              <button
+                onclick="showPage('page-tech-cashier-list')"
+                class="px-4 py-2 border border-slate-300 bg-white rounded-xl text-xs font-bold hover:bg-slate-100 transition"
+              >
+                <i class="fa-solid fa-arrow-left mr-1"></i> ย้อนกลับ
+              </button>
+              <button
+                onclick="window.print()"
+                class="px-4 py-2 bg-purple-600 text-white rounded-xl text-xs font-bold hover:bg-purple-700 shadow-md transition"
+              >
+                <i class="fa-solid fa-print mr-1"></i> สั่งพิมพ์เอกสาร A4
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="printable-area"
+            class="bg-white p-8 sm:p-10 rounded-2xl border border-slate-300 shadow-lg max-w-4xl mx-auto text-slate-800 space-y-6"
+          >
+            <div
+              class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-900 pb-5 gap-4"
+            >
+              <div class="flex items-start space-x-4">
+                <div
+                  class="w-14 h-14 bg-purple-700 rounded-xl flex items-center justify-center text-white text-2xl font-bold shrink-0"
+                >
+                  <i class="fa-solid fa-snowflake"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-slate-900 leading-tight">
+                    บริษัท แอร์ดีดี เซอร์วิส แอนด์ แอสเซท จำกัด
+                  </h3>
+                  <p class="text-xs font-medium text-purple-700">
+                    AirCool DD Service & Asset Co., Ltd. (สำนักงานใหญ่)
+                  </p>
+                  <p class="text-[11px] text-slate-600 mt-1">
+                    123/45 ถนนพหลโยธิน แขวงอนุสาวรีย์ เขตบางเขน กรุงเทพมหานคร
+                    10220
+                  </p>
+                  <p class="text-[11px] text-slate-600">
+                    โทรศัพท์: 02-123-4567 | เลขประจำตัวผู้เสียภาษีอากร:
+                    0-1055-60000-00-0
+                  </p>
+                </div>
+              </div>
+              <div
+                class="text-left sm:text-right border-t sm:border-t-0 border-slate-200 pt-3 sm:pt-0 w-full sm:w-auto"
+              >
+                <span
+                  class="inline-block px-3 py-1 bg-slate-900 text-white text-xs font-bold rounded tracking-wider uppercase"
+                  >ใบเสร็จรับเงิน / ใบกำกับภาษีอย่างย่อ</span
+                >
+                <p class="text-[10px] text-slate-500 uppercase mt-1">
+                  TAX INVOICE / RECEIPT (ABBREVIATED)
+                </p>
+                <h4 class="text-base font-bold font-mono text-purple-900 mt-1">
+                  NO: REC-202608-001
+                </h4>
+                <p class="text-xs text-slate-600">
+                  วันที่ / Date:
+                  <span class="font-semibold text-slate-800"
+                    >16 สิงหาคม 2026</span
+                  >
+                </p>
+              </div>
+            </div>
+
+            <!-- CUSTOMER & SERVICE INFO -->
+            <div
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-slate-50 p-4 rounded-xl border border-slate-200"
+            >
+              <div class="space-y-1">
+                <p
+                  class="font-bold text-slate-900 border-b border-slate-200 pb-1 text-[11px] text-purple-800"
+                >
+                  ข้อมูลผู้ซื้อสินค้า / ผู้รับบริการ (Customer Info)
+                </p>
+                <p>
+                  <strong>ชื่อ-นามสกุล:</strong> คุณนรินทร์ ใจดี (Narin Jaidee)
+                </p>
+                <p>
+                  <strong>ที่อยู่:</strong> 88/12 หมู่บ้านสุขสันต์ ต.คูคต
+                  อ.ลำลูกกา จ.ปทุมธานี 12130
+                </p>
+                <p>
+                  <strong>เลขประจำตัวผู้เสียภาษี / บัตรประชาชน:</strong>
+                  1-1004-99999-00-1
+                </p>
+              </div>
+              <div class="space-y-1">
+                <p
+                  class="font-bold text-slate-900 border-b border-slate-200 pb-1 text-[11px] text-purple-800"
+                >
+                  ข้อมูลอ้างอิงบริการ (Service Reference)
+                </p>
+                <p>
+                  <strong>เลขที่ใบสั่งซ่อม (Job No):</strong>
+                  <span class="font-semibold text-purple-700"
+                    >JOB-202608-001</span
+                  >
+                </p>
+                <p>
+                  <strong>อุปกรณ์ (Asset):</strong> Daikin Inverter 12000 BTU
+                </p>
+                <p>
+                  <strong>ช่างผู้ให้บริการ:</strong> นายวิชัย ช่างทอง (ID:
+                  TECH-002)
+                </p>
+              </div>
+            </div>
+
+            <!-- ITEMIZED TABLE -->
+            <div class="overflow-x-auto border border-slate-800 rounded-lg">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr
+                    class="bg-slate-900 text-white font-bold uppercase text-[11px]"
+                  >
+                    <th
+                      class="p-2.5 text-center border-r border-slate-700 w-12"
+                    >
+                      ลำดับ
+                    </th>
+                    <th class="p-2.5 border-r border-slate-700 w-28">
+                      รหัสสินค้า
+                    </th>
+                    <th class="p-2.5 border-r border-slate-700">
+                      รายการสินค้าและบริการ (Description)
+                    </th>
+                    <th
+                      class="p-2.5 text-center border-r border-slate-700 w-16"
+                    >
+                      จำนวน
+                    </th>
+                    <th class="p-2.5 text-right border-r border-slate-700 w-24">
+                      หน่วยละ
+                    </th>
+                    <th class="p-2.5 text-right w-28">จำนวนเงิน (บาท)</th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="divide-y divide-slate-200 text-slate-800 font-medium"
+                >
+                  <tr>
+                    <td class="p-2.5 text-center border-r border-slate-200">
+                      1
+                    </td>
+                    <td
+                      class="p-2.5 font-mono border-r border-slate-200 text-slate-600"
+                    >
+                      SRV-REP-01
+                    </td>
+                    <td class="p-2.5 border-r border-slate-200">
+                      ค่าบริการตรวจซ่อมระบบทำความเย็นและเติมน้ำยาล้างแผงคอยล์
+                    </td>
+                    <td class="p-2.5 text-center border-r border-slate-200">
+                      1
+                    </td>
+                    <td class="p-2.5 text-right border-r border-slate-200">
+                      800.00
+                    </td>
+                    <td class="p-2.5 text-right font-bold">800.00</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 text-center border-r border-slate-200">
+                      2
+                    </td>
+                    <td
+                      class="p-2.5 font-mono border-r border-slate-200 text-slate-600"
+                    >
+                      PART-CAP-45
+                    </td>
+                    <td class="p-2.5 border-r border-slate-200">
+                      คาปาซิเตอร์รัน 45 uF (อะไหล่แท้รับประกัน 90 วัน)
+                    </td>
+                    <td class="p-2.5 text-center border-r border-slate-200">
+                      1
+                    </td>
+                    <td class="p-2.5 text-right border-r border-slate-200">
+                      350.00
+                    </td>
+                    <td class="p-2.5 text-right font-bold">350.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- TOTALS & THAI BAHT -->
+            <div class="grid grid-cols-1 sm:grid-cols-12 gap-4 text-xs pt-2">
+              <div class="sm:col-span-7 space-y-3">
+                <div
+                  class="bg-purple-50 p-3 rounded-xl border border-purple-200 flex items-center justify-between"
+                >
+                  <span class="font-bold text-purple-900 text-xs"
+                    >จำนวนเงินรวมตัวอักษร:</span
+                  >
+                  <span class="font-bold text-purple-950 text-xs"
+                    >(หนึ่งพันหนึ่งร้อยเจ็ดสิบเจ็ดบาทถ้วน)</span
+                  >
+                </div>
+              </div>
+              <div class="sm:col-span-5 space-y-1.5 text-xs">
+                <div
+                  class="flex justify-between py-1 border-b border-slate-200 text-slate-600"
+                >
+                  <span>รวมเป็นเงิน (Subtotal):</span
+                  ><span class="font-mono font-semibold">1,150.00</span>
+                </div>
+                <div
+                  class="flex justify-between py-1 border-b border-slate-200 text-rose-600"
+                >
+                  <span>หักส่วนลดพิเศษ (Discount):</span
+                  ><span class="font-mono font-semibold">-50.00</span>
+                </div>
+                <div
+                  class="flex justify-between py-1 border-b border-slate-200 text-slate-600"
+                >
+                  <span>ราคาหลังหักส่วนลด (Net Amount):</span
+                  ><span class="font-mono font-semibold">1,100.00</span>
+                </div>
+                <div
+                  class="flex justify-between py-1 border-b border-slate-200 text-slate-600"
+                >
+                  <span>ภาษีมูลค่าเพิ่ม VAT (7%):</span
+                  ><span class="font-mono font-semibold">77.00</span>
+                </div>
+                <div
+                  class="flex justify-between py-2 border-b-2 border-slate-900 text-slate-900 text-sm font-bold"
+                >
+                  <span>จํานวนเงินรวมทั้งสิ้น (Grand Total):</span
+                  ><span class="font-mono text-base text-purple-800"
+                    >฿1,177.00</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- SIGNATURE -->
+            <div
+              class="pt-6 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-8 text-center text-xs"
+            >
+              <div class="space-y-2">
+                <p class="font-semibold text-slate-700">
+                  ได้รับบริการและสินค้าถูกต้องตามรายการข้างต้นแล้ว
+                </p>
+                <div
+                  class="border-2 border-dashed border-slate-300 rounded-xl bg-slate-50 p-2 relative"
+                >
+                  <canvas
+                    id="sig-canvas"
+                    class="w-full h-24 cursor-crosshair touch-none bg-white rounded-lg border border-slate-200"
+                  ></canvas>
+                  <div class="absolute bottom-3 right-4 no-print">
+                    <button
+                      type="button"
+                      onclick="clearSignature()"
+                      class="px-2 py-0.5 bg-slate-200 hover:bg-slate-300 rounded text-[10px] font-semibold text-slate-700"
+                    >
+                      ล้างลายเซ็น
+                    </button>
+                  </div>
+                </div>
+                <p class="text-slate-600">
+                  ( คุณนรินทร์ ใจดี )<br /><span
+                    class="text-[10px] text-slate-400"
+                    >ผู้รับบริการ / Customer Signature</span
+                  >
+                </p>
+              </div>
+              <div class="space-y-6 pt-2">
+                <p class="font-semibold text-slate-700">
+                  ในนาม บริษัท แอร์ดีดี เซอร์วิส แอนด์ แอสเซท จำกัด
+                </p>
+                <div
+                  class="pt-8 border-b border-dashed border-slate-400 w-48 mx-auto"
+                ></div>
+                <p class="text-slate-600">
+                  ( นายวิชัย ช่างทอง )<br /><span
+                    class="text-[10px] text-slate-400"
+                    >ผู้รับเงิน / ช่างผู้ให้บริการ / Collector</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- GENERAL PLACEHOLDER FOR GENERIC EXTENSION MENUS -->
+        <section id="page-generic-view" class="space-y-6 hidden">
+          <div
+            class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm text-center space-y-4"
+          >
+            <div
+              class="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mx-auto text-2xl"
+            >
+              <i id="generic-icon" class="fa-solid fa-folder-open"></i>
+            </div>
+            <h2 class="text-xl font-bold text-slate-900" id="generic-title">
+              หน้าเมนูระบบ
+            </h2>
+            <p class="text-sm text-slate-500 max-w-md mx-auto">
+              ส่วนขยายสำหรับการจัดการข้อมูลเพิ่มเติม รองรับการทำงานเต็มรูปแบบ
+            </p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- VIEW MODAL (ดวงตา) -->
+    <div
+      id="view-modal"
+      class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4"
+      >
+        <div
+          class="flex justify-between items-center border-b border-slate-100 pb-3"
+        >
+          <h3 class="font-bold text-slate-900 text-base">
+            <i class="fa-solid fa-eye text-purple-600 mr-2"></i>
+            รายละเอียดข้อมูลทั้งหมด
+          </h3>
+          <button
+            onclick="closeViewModal()"
+            class="text-slate-400 hover:text-slate-600"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div id="view-modal-body" class="space-y-2 text-xs text-slate-700">
+          <!-- เติมข้อมูลรายละเอียด -->
+        </div>
+        <div class="flex justify-end pt-2">
+          <button
+            onclick="closeViewModal()"
+            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition"
+          >
+            ปิดหน้าต่าง
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDIT MODAL (ดินสอ) -->
+    <div
+      id="edit-modal"
+      class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4"
+      >
+        <div
+          class="flex justify-between items-center border-b border-slate-100 pb-3"
+        >
+          <h3 class="font-bold text-slate-900 text-base">
+            <i class="fa-solid fa-pen text-amber-600 mr-2"></i>
+            แก้ไขข้อมูลรายการ
+          </h3>
+          <button
+            onclick="closeEditModal()"
+            class="text-slate-400 hover:text-slate-600"
+          >
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <form
+          id="edit-form"
+          onsubmit="handleEditSubmit(event)"
+          class="space-y-3 text-xs"
+        >
+          <input type="hidden" id="edit-row-id" />
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1"
+              >รหัสรายการ (ID):</label
+            >
+            <input
+              type="text"
+              id="edit-id-input"
+              disabled
+              class="w-full border border-slate-200 bg-slate-100 rounded-xl px-3 py-2 font-mono font-semibold"
+            />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1"
+              >รายละเอียด / ลูกค้า / รายการ:</label
+            >
+            <input
+              type="text"
+              id="edit-col2-input"
+              required
+              class="w-full border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1"
+              >สถานะ / อะไหล่:</label
+            >
+            <input
+              type="text"
+              id="edit-col3-input"
+              required
+              class="w-full border border-slate-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+          <div
+            class="flex justify-end space-x-2 pt-3 border-t border-slate-100"
+          >
+            <button
+              type="button"
+              onclick="closeEditModal()"
+              class="px-4 py-2 border border-slate-300 rounded-xl font-semibold text-slate-600 hover:bg-slate-100"
+            >
+              ยกเลิก
+            </button>
+            <button
+              type="submit"
+              class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl shadow"
+            >
+              บันทึกการแก้ไข
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- DELETE CONFIRMATION MODAL (ถังขยะ) -->
+    <div
+      id="delete-modal"
+      class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl text-center space-y-4"
+      >
+        <div
+          class="w-14 h-14 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto text-2xl"
+        >
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div>
+          <h3 class="font-bold text-slate-900 text-base">ยืนยันการลบข้อมูล?</h3>
+          <p class="text-xs text-slate-500 mt-1">
+            คุณต้องการลบรายการ
+            <span
+              id="delete-target-id"
+              class="font-semibold text-purple-700"
+            ></span>
+            นี้ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้
+          </p>
+        </div>
+        <div class="flex justify-center space-x-3 pt-2">
+          <button
+            onclick="closeDeleteConfirmModal()"
+            class="flex-1 px-4 py-2.5 border border-slate-300 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
+          >
+            ปฏิเสธ (ยกเลิก)
+          </button>
+          <button
+            onclick="executeDeleteRecord()"
+            class="flex-1 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold shadow"
+          >
+            ยืนยันการลบ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div
+      id="toast-modal"
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 transform opacity-0 translate-y-4 pointer-events-none"
+    >
+      <div
+        class="bg-slate-900/95 text-white px-4 py-2.5 rounded-2xl shadow-2xl border border-slate-700 flex items-center space-x-3 text-xs font-semibold"
+      >
+        <div
+          id="toast-icon-bg"
+          class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center"
+        >
+          <i id="toast-icon" class="fa-solid fa-check"></i>
+        </div>
+        <span id="toast-message">Save data successfully</span>
+      </div>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+      let currentLang = "th";
+      let activeHistoryTab = "all";
+      let activeChartInstance = null;
+      let toastTimeout;
+      let currentActiveMenuId = "page-tech-dashboard";
+      let itemToDeleteId = null;
+
+      const profileDataDB = {
+        "2026-08": {
+          all: [
+            {
+              id: "JOB-202608-001",
+              col2: "คุณนรินทร์ ใจดี (ซ่อมแอร์)",
+              col3: "คาปาซิเตอร์ 45 uF (฿350)",
+              col4: "฿350.00",
+              status: "ยังไม่ทำ (Pending)",
+            },
+            {
+              id: "JOB-202608-003",
+              col2: "คุณสมชาย สามารถ (ล้างแอร์)",
+              col3: "น้ำยาล้างคอยล์ (฿500)",
+              col4: "฿500.00",
+              status: "ทำแล้ว (Completed)",
+            },
+            {
+              id: "JOB-202608-004",
+              col2: "บริษัท ไทยการช่าง (ตรวจเช็ก)",
+              col3: "ไม่มีการเบิกอะไหล่ (฿0)",
+              col4: "฿800.00",
+              status: "ทำแล้ว (Completed)",
+            },
+          ],
+          parts: [
+            {
+              id: "REQ-001",
+              col2: "คาปาซิเตอร์รัน 45 uF",
+              col3: "2 ตัว",
+              col4: "฿700.00",
+              status: "อนุมัติแล้ว",
+            },
+            {
+              id: "REQ-002",
+              col2: "น้ำยาล้างแผงคอยล์ 1 ลิตร",
+              col3: "1 แกลลอน",
+              col4: "฿500.00",
+              status: "อนุมัติแล้ว",
+            },
+          ],
+          fuel: [
+            {
+              id: "FUEL-001",
+              col2: "เดินทางไปหน้างาน ลำลูกกา (ไป-กลับ 45 กม.)",
+              col3: "฿180.00",
+              col4: "สลิปน้ำมัน #PT-9921",
+              status: "รอ Admin ตรวจสอบ",
+            },
+            {
+              id: "FUEL-002",
+              col2: "เดินทางไปหน้างาน บางเขน (ไป-กลับ 20 กม.)",
+              col3: "฿90.00",
+              col4: "สลิปน้ำมัน #BCH-102",
+              status: "อนุมัติแล้ว",
+            },
+          ],
+          cash: [
+            {
+              id: "CASH-001",
+              col2: "เบิกเงินทดรองจ่ายซื้ออุปกรณ์เร่งด่วน",
+              col3: "฿1,000.00",
+              col4: "เงินสด/โอน",
+              status: "อนุมัติแล้ว",
+            },
+            {
+              id: "CASH-002",
+              col2: "ขอเบิกค่าแรงพิเศษงานด่วนวันหยุด",
+              col3: "฿1,500.00",
+              col4: "โอนเข้าบัญชีธนาคาร",
+              status: "รอดำเนินการ",
+            },
+          ],
+        },
+        "2026-07": {
+          all: [
+            {
+              id: "JOB-202607-010",
+              col2: "คุณหญิง ภคมน (ล้างแอร์ใหญ่)",
+              col3: "น้ำยา R32 (฿600)",
+              col4: "฿1,200.00",
+              status: "ทำแล้ว (Completed)",
+            },
+          ],
+          parts: [
+            {
+              id: "REQ-003",
+              col2: "น้ำยาแอร์ R32",
+              col3: "1 ถัง",
+              col4: "฿600.00",
+              status: "อนุมัติแล้ว",
+            },
+          ],
+          fuel: [
+            {
+              id: "FUEL-003",
+              col2: "เดินทางไปหน้างาน แจ้งวัฒนะ (30 กม.)",
+              col3: "฿120.00",
+              col4: "สลิปน้ำมัน #SHELL-44",
+              status: "อนุมัติแล้ว",
+            },
+          ],
+          cash: [
+            {
+              id: "CASH-003",
+              col2: "เบิกเงินค่าเบี้ยเลี้ยงหน้างานต่างจังหวัด",
+              col3: "฿800.00",
+              col4: "เงินสด",
+              status: "อนุมัติแล้ว",
+            },
+          ],
+        },
+      };
+
+      function toggleMobileSidebar() {
+        document
+          .getElementById("main-sidebar")
+          .classList.toggle("-translate-x-full");
+      }
+
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast-modal");
+        const msgEl = document.getElementById("toast-message");
+        const iconEl = document.getElementById("toast-icon");
+        const iconBg = document.getElementById("toast-icon-bg");
+
+        if (!toast || !msgEl) return;
+        msgEl.innerText = message;
+        if (type === "danger") {
+          iconBg.className =
+            "w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center";
+          iconEl.className = "fa-solid fa-trash-can";
+        } else {
+          iconBg.className =
+            "w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center";
+          iconEl.className = "fa-solid fa-check";
+        }
+        toast.classList.remove(
+          "opacity-0",
+          "translate-y-4",
+          "pointer-events-none",
+        );
+        toast.classList.add("opacity-100", "translate-y-0");
+
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove("opacity-100", "translate-y-0");
+          toast.classList.add(
+            "opacity-0",
+            "translate-y-4",
+            "pointer-events-none",
+          );
+        }, 2200);
+      }
+
+      function toggleLang() {
+        currentLang = currentLang === "th" ? "en" : "th";
+        document.getElementById("lang-indicator").innerText =
+          currentLang === "th" ? "TH | EN" : "EN | TH";
+        renderSidebar();
+        renderProfileHistoryTable();
+      }
+
+      function showPage(pageId) {
+        if (pageId.startsWith("generic:")) {
+          const parts = pageId.split(":");
+          document.getElementById("generic-title").innerText = parts[1];
+          document.getElementById("generic-icon").className =
+            `fa-solid ${parts[2]}`;
+          pageId = "page-generic-view";
+        }
+
+        currentActiveMenuId = pageId;
+
+        const pages = [
+          "page-tech-dashboard",
+          "page-job-detail-screening",
+          "page-tech-profile",
+          "page-tech-cashier-list",
+          "page-invoice",
+          "page-generic-view",
+        ];
+        pages.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.toggle("hidden", id !== pageId);
+        });
+
+        renderSidebar();
+
+        if (window.innerWidth < 768) {
+          document
+            .getElementById("main-sidebar")
+            .classList.add("-translate-x-full");
+        }
+      }
+
+      function handleScreeningSaveAndRedirect() {
+        showToast("Save data successfully", "success");
+        showPage("page-tech-dashboard");
+      }
+
+      // ==========================================
+      // API FETCH FUNCTIONS (TECHNICIAN PORTAL)
+      // ==========================================
+
+      async function loadTechnicianJobs() {
+        const techCode =
+          localStorage.getItem("aircool_user_code") || "TECH-002";
+        try {
+          const res = await fetch(
+            `http://localhost:3000/api/technician/jobs/${techCode}`,
+          );
+          const jobs = await res.json();
+          const tbody = document.getElementById("tech-jobs-tbody");
+          if (!tbody) return;
+
+          if (Array.isArray(jobs) && jobs.length > 0) {
+            tbody.innerHTML = jobs
+              .map(
+                (item) => `
+              <tr class="hover:bg-slate-50/80 transition">
+                <td class="p-4 text-center">
+                  <input type="checkbox" class="row-checkbox" />
+                </td>
+                <td class="p-4 font-semibold text-purple-700">${item.job_code}</td>
+                <td class="p-4 font-medium text-slate-900">
+                  ${item.customer_name || "ลูกค้าทั่วไป"}
+                  <div class="text-xs text-slate-400">${item.site_address || ""}</div>
+                </td>
+                <td class="p-4">${item.service_type || "ซ่อมแอร์"}</td>
+                <td class="p-4">${item.appointment_date || "วันนี้"}</td>
+                <td class="p-4">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">${item.status || "Working"}</span>
+                </td>
+                <td class="p-4 text-center space-x-2">
+                  <button onclick="showPage('page-job-detail-screening')" title="รายละเอียดหน้างาน" class="p-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded-lg transition">
+                    <i class="fa-solid fa-eye text-xs"></i>
+                  </button>
+                </td>
+              </tr>
+            `,
+              )
+              .join("");
+          }
+        } catch (err) {
+          console.error("Error loading technician jobs:", err);
+        }
+      }
+
+      async function handleUploadPhotos(jobCode) {
+        const techCode =
+          localStorage.getItem("aircool_user_code") || "TECH-002";
+        const before_url = document.getElementById("input-before-url").value;
+        const after_url = document.getElementById("input-after-url").value;
+
+        try {
+          const res = await fetch(
+            "http://localhost:3000/api/technician/photos",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                job_code: jobCode,
+                technician_code: techCode,
+                before_url,
+                after_url,
+              }),
+            },
+          );
+          const result = await res.json();
+          if (result.success) {
+            showToast("บันทึกรูปภาพหน้างานสำเร็จ!", "success");
+          } else {
+            showToast("เกิดข้อผิดพลาดในการบันทึกรูปภาพ", "danger");
+          }
+        } catch (err) {
+          console.error("Error uploading photos:", err);
+          showToast(
+            "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ (Offline Mode)",
+            "success",
+          );
+        }
+      }
+
+      // VIEW MODAL (ดวงตา)
+      function openViewModal(id, col2, col3, col4, status) {
+        const modal = document.getElementById("view-modal");
+        const body = document.getElementById("view-modal-body");
+        body.innerHTML = `
+          <div class="p-3 bg-purple-50 rounded-xl space-y-1.5 border border-purple-100">
+            <p><strong>รหัสรายการ (ID):</strong> <span class="text-purple-700 font-mono font-bold">${id}</span></p>
+            <p><strong>รายละเอียดหลัก:</strong> ${col2}</p>
+            <p><strong>ข้อมูลประกอบ (อะไหล่/ราคา):</strong> ${col3}</p>
+            <p><strong>ยอดเงินรวม:</strong> ${col4 || "-"}</p>
+            <p><strong>สถานะปัจจุบัน:</strong> <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">${status || "ปกติ"}</span></p>
+          </div>
+        `;
+        modal.classList.remove("hidden");
+      }
+      function closeViewModal() {
+        document.getElementById("view-modal").classList.add("hidden");
+      }
+
+      // EDIT MODAL (ดินสอ)
+      function openEditModal(id, col2, col3, status) {
+        document.getElementById("edit-row-id").value = id;
+        document.getElementById("edit-id-input").value = id;
+        document.getElementById("edit-col2-input").value = col2;
+        document.getElementById("edit-col3-input").value = col3;
+        document.getElementById("edit-modal").classList.remove("hidden");
+      }
+      function closeEditModal() {
+        document.getElementById("edit-modal").classList.add("hidden");
+      }
+      function handleEditSubmit(e) {
+        e.preventDefault();
+        const id = document.getElementById("edit-row-id").value;
+        const newCol2 = document.getElementById("edit-col2-input").value;
+        const newCol3 = document.getElementById("edit-col3-input").value;
+
+        const monthInput = document.getElementById(
+          "profile-month-filter",
+        ).value;
+        if (
+          profileDataDB[monthInput] &&
+          profileDataDB[monthInput][activeHistoryTab]
+        ) {
+          const item = profileDataDB[monthInput][activeHistoryTab].find(
+            (i) => i.id === id,
+          );
+          if (item) {
+            item.col2 = newCol2;
+            item.col3 = newCol3;
+          }
+        }
+        renderProfileHistoryTable();
+        closeEditModal();
+        showToast("อัปเดตข้อมูลสำเร็จเรียบร้อยแล้ว", "success");
+      }
+
+      // DELETE CONFIRMATION MODAL (ถังขยะ)
+      function openDeleteConfirmModal(id) {
+        itemToDeleteId = id;
+        document.getElementById("delete-target-id").innerText = id;
+        document.getElementById("delete-modal").classList.remove("hidden");
+      }
+      function closeDeleteConfirmModal() {
+        itemToDeleteId = null;
+        document.getElementById("delete-modal").classList.add("hidden");
+      }
+      function executeDeleteRecord() {
+        if (!itemToDeleteId) return;
+        const monthInput = document.getElementById(
+          "profile-month-filter",
+        ).value;
+        if (
+          profileDataDB[monthInput] &&
+          profileDataDB[monthInput][activeHistoryTab]
+        ) {
+          profileDataDB[monthInput][activeHistoryTab] = profileDataDB[
+            monthInput
+          ][activeHistoryTab].filter((i) => i.id !== itemToDeleteId);
+        }
+        renderProfileHistoryTable();
+        closeDeleteConfirmModal();
+        showToast("ลบข้อมูลรายการสำเร็จแล้ว", "danger");
+      }
+
+      function renderAnalyticsChart(kpiKey, viewType) {
+        const card = document.getElementById("analytics-modal-card");
+        const title = document.getElementById("analytics-title");
+        const container = document.getElementById(
+          "analytics-content-container",
+        );
+        card.classList.remove("hidden");
+
+        let dataObj = {
+          title: "คิวงานย้อนหลัง (Jobs History)",
+          labels: ["จัน", "อัง", "พุธ", "พฤ", "ศุกร์"],
+          values: [4, 3, 5, 2, 3],
+        };
+        if (kpiKey === "commission")
+          dataObj = {
+            title: "รายได้คอมมิชชัน (Commissions)",
+            labels: ["สัปดาห์ 1", "สัปดาห์ 2", "สัปดาห์ 3", "สัปดาห์ 4"],
+            values: [1200, 1500, 1850, 300],
+          };
+        if (kpiKey === "fuel")
+          dataObj = {
+            title: "เบิกจ่ายค่าน้ำมัน (Fuel Claims)",
+            labels: ["Fuel #1", "Fuel #2"],
+            values: [100, 80],
+          };
+        if (kpiKey === "rating")
+          dataObj = {
+            title: "สัดส่วนคะแนนประเมิน (Rating Distribution)",
+            labels: ["5 ดาว", "4 ดาว", "3 ดาว"],
+            values: [16, 2, 0],
+          };
+
+        title.innerText = `${dataObj.title} [มุมมอง: ${viewType.toUpperCase()}]`;
+
+        if (viewType === "table") {
+          let rowsHtml = dataObj.labels
+            .map(
+              (lbl, idx) => `
+            <tr><td class="p-2 border font-medium">${lbl}</td><td class="p-2 border text-purple-700 font-bold">${dataObj.values[idx]}</td></tr>
+          `,
+            )
+            .join("");
+          container.innerHTML = `
+            <table class="w-full text-xs text-left border border-slate-200 rounded-xl overflow-hidden">
+              <thead class="bg-purple-50 text-purple-900 font-bold"><tr><th class="p-2 border">หมวดหมู่/ช่วงเวลา</th><th class="p-2 border">จำนวน/มูลค่า</th></tr></thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          `;
+        } else {
+          container.innerHTML = `<canvas id="analytics-canvas" class="max-h-56"></canvas>`;
+          const ctx = document
+            .getElementById("analytics-canvas")
+            .getContext("2d");
+          if (activeChartInstance) activeChartInstance.destroy();
+          activeChartInstance = new Chart(ctx, {
+            type: viewType === "bar" ? "bar" : "pie",
+            data: {
+              labels: dataObj.labels,
+              datasets: [
+                {
+                  label: "ข้อมูลสะสม",
+                  data: dataObj.values,
+                  backgroundColor:
+                    viewType === "bar"
+                      ? "#7c3aed"
+                      : ["#7c3aed", "#a855f7", "#c084fc", "#e9d5ff", "#38bdf8"],
+                },
+              ],
+            },
+            options: { responsive: true, maintainAspectRatio: false },
+          });
+        }
+      }
+
+      function closeAnalyticsCard() {
+        document.getElementById("analytics-modal-card").classList.add("hidden");
+      }
+
+      function switchHistoryTab(tabType) {
+        activeHistoryTab = tabType;
+        ["all", "parts", "fuel", "cash"].forEach((t) => {
+          const btn = document.getElementById(`tab-btn-${t}`);
+          if (t === tabType) {
+            btn.className =
+              "px-3.5 py-2 rounded-xl text-xs font-bold bg-purple-600 text-white shadow transition flex items-center space-x-1.5";
+          } else {
+            btn.className =
+              "px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600 hover:bg-purple-100 transition flex items-center space-x-1.5";
+          }
+        });
+
+        const titles = {
+          all: "📦 รายการ: ข้อมูลทั้งหมด (All Records)",
+          parts: "🔧 รายการ: เบิกอะไหล่ (Parts Requisition)",
+          fuel: "⛽ รายการ: เบิกค่าน้ำมัน (Fuel Claims)",
+          cash: "💵 รายการ: เบิกเงิน/ค่าแรง (Cash Advance)",
+        };
+        document.getElementById("current-box-title").innerText =
+          titles[tabType];
+        renderProfileHistoryTable();
+      }
+
+      function handleFilterChange() {
+        renderProfileHistoryTable();
+      }
+
+      function toggleSelectAll(source) {
+        const checkboxes = document.querySelectorAll(".row-checkbox");
+        checkboxes.forEach((cb) => (cb.checked = source.checked));
+      }
+
+      function printSelectedRows() {
+        const checkboxes = document.querySelectorAll(".row-checkbox:checked");
+        if (checkboxes.length === 0) {
+          showToast(
+            "กรุณาเลือกรายการที่ต้องการพิมพ์อย่างน้อย 1 รายการ",
+            "danger",
+          );
+          return;
+        }
+        window.print();
+      }
+
+      function renderProfileHistoryTable() {
+        const monthInput = document.getElementById(
+          "profile-month-filter",
+        ).value;
+        const tbody = document.getElementById("profile-history-table-body");
+        const thead = document.getElementById("profile-table-head");
+        const printMonthLabel = document.getElementById("print-month-label");
+        const filterSummary = document.getElementById("filter-result-summary");
+
+        if (!tbody || !thead) return;
+
+        const [year, month] = monthInput.split("-");
+        const monthNamesTh = {
+          "01": "มกราคม",
+          "02": "กุมภาพันธ์",
+          "03": "มีนาคม",
+          "04": "เมษายน",
+          "05": "พฤษภาคม",
+          "06": "มิถุนายน",
+          "07": "กรกฎาคม",
+          "08": "สิงหาคม",
+          "09": "กันยายน",
+          10: "ตุลาคม",
+          11: "พฤศจิกายน",
+          12: "ธันวาคม",
+        };
+        const displayMonthStr = `${monthNamesTh[month] || month} ${parseInt(year) + 543}`;
+        if (printMonthLabel) printMonthLabel.innerText = displayMonthStr;
+        if (filterSummary)
+          filterSummary.innerText = `แสดงผลประจำเดือน: ${displayMonthStr}`;
+
+        const monthData = profileDataDB[monthInput] || {
+          all: [],
+          parts: [],
+          fuel: [],
+          cash: [],
+        };
+        const items = monthData[activeHistoryTab] || [];
+
+        if (activeHistoryTab === "all") {
+          thead.innerHTML = `
+            <tr>
+              <th class="p-3.5 w-10 text-center no-print"><input type="checkbox" onchange="toggleSelectAll(this)" /></th>
+              <th class="p-3.5">Job No.</th>
+              <th class="p-3.5">ลูกค้า & รายการบริการ</th>
+              <th class="p-3.5">อะไหล่ที่ใช้ / ราคา</th>
+              <th class="p-3.5">รายได้สะสม</th>
+              <th class="p-3.5">สถานะงาน</th>
+              <th class="p-3.5 text-center">ACTION (ดู/แก้/ลบ)</th>
+            </tr>
+          `;
+          tbody.innerHTML =
+            items.length > 0
+              ? items
+                  .map(
+                    (item) => `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-3.5 text-center no-print"><input type="checkbox" class="row-checkbox" /></td>
+              <td class="p-3.5 font-semibold text-purple-700">${item.id}</td>
+              <td class="p-3.5 font-medium text-slate-900">${item.col2}</td>
+              <td class="p-3.5 text-slate-600">${item.col3}</td>
+              <td class="p-3.5 font-bold text-purple-700">${item.col4}</td>
+              <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-medium ${item.status.includes("Pending") ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}">${item.status}</span></td>
+              <td class="p-3.5 text-center">
+                <div class="flex items-center justify-center space-x-1.5 no-print">
+                  <button onclick="openViewModal('${item.id}', '${item.col2}', '${item.col3}', '${item.col4}', '${item.status}')" title="ดูรายละเอียด" class="p-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded transition"><i class="fa-solid fa-eye text-xs"></i></button>
+                  <button onclick="openEditModal('${item.id}', '${item.col2}', '${item.col3}', '${item.status}')" title="แก้ไข" class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded transition"><i class="fa-solid fa-pen text-xs"></i></button>
+                  <button onclick="openDeleteConfirmModal('${item.id}')" title="ลบ" class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                </div>
+              </td>
+            </tr>
+          `,
+                  )
+                  .join("")
+              : `<tr><td colspan="7" class="p-6 text-center text-slate-400">ไม่พบข้อมูลในเดือนนี้</td></tr>`;
+        } else if (activeHistoryTab === "parts") {
+          thead.innerHTML = `
+            <tr>
+              <th class="p-3.5 w-10 text-center no-print"><input type="checkbox" onchange="toggleSelectAll(this)" /></th>
+              <th class="p-3.5">Req ID</th>
+              <th class="p-3.5">รายการอะไหล่ / อุปกรณ์</th>
+              <th class="p-3.5">จำนวนที่เบิก</th>
+              <th class="p-3.5">มูลค่ารวม</th>
+              <th class="p-3.5">สถานะการเบิก</th>
+              <th class="p-3.5 text-center">ACTION (ดู/แก้/ลบ)</th>
+            </tr>
+          `;
+          tbody.innerHTML =
+            items.length > 0
+              ? items
+                  .map(
+                    (item) => `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-3.5 text-center no-print"><input type="checkbox" class="row-checkbox" /></td>
+              <td class="p-3.5 font-semibold text-purple-700">${item.id}</td>
+              <td class="p-3.5 font-medium text-slate-900">${item.col2}</td>
+              <td class="p-3.5 text-slate-600">${item.col3}</td>
+              <td class="p-3.5 font-bold text-purple-700">${item.col4}</td>
+              <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">${item.status}</span></td>
+              <td class="p-3.5 text-center">
+                <div class="flex items-center justify-center space-x-1.5 no-print">
+                  <button onclick="openViewModal('${item.id}', '${item.col2}', '${item.col3}', '${item.col4}', '${item.status}')" title="ดูรายละเอียด" class="p-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded transition"><i class="fa-solid fa-eye text-xs"></i></button>
+                  <button onclick="openEditModal('${item.id}', '${item.col2}', '${item.col3}', '${item.status}')" title="แก้ไข" class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded transition"><i class="fa-solid fa-pen text-xs"></i></button>
+                  <button onclick="openDeleteConfirmModal('${item.id}')" title="ลบ" class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                </div>
+              </td>
+            </tr>
+          `,
+                  )
+                  .join("")
+              : `<tr><td colspan="7" class="p-6 text-center text-slate-400">ไม่พบรายการเบิกอะไหล่ในเดือนนี้</td></tr>`;
+        } else if (activeHistoryTab === "fuel") {
+          thead.innerHTML = `
+            <tr>
+              <th class="p-3.5 w-10 text-center no-print"><input type="checkbox" onchange="toggleSelectAll(this)" /></th>
+              <th class="p-3.5">Claim ID</th>
+              <th class="p-3.5">รายละเอียดเส้นทางเดินทางหน้างาน</th>
+              <th class="p-3.5">ยอดเงินขอเบิก</th>
+              <th class="p-3.5">หลักฐานสลิป</th>
+              <th class="p-3.5">สถานะอนุมัติ</th>
+              <th class="p-3.5 text-center">ACTION (ดู/แก้/ลบ)</th>
+            </tr>
+          `;
+          tbody.innerHTML =
+            items.length > 0
+              ? items
+                  .map(
+                    (item) => `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-3.5 text-center no-print"><input type="checkbox" class="row-checkbox" /></td>
+              <td class="p-3.5 font-semibold text-purple-700">${item.id}</td>
+              <td class="p-3.5 font-medium text-slate-900">${item.col2}</td>
+              <td class="p-3.5 font-bold text-amber-600">${item.col3}</td>
+              <td class="p-3.5 text-slate-600 font-mono text-[11px]">${item.col4}</td>
+              <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-medium ${item.status.includes("รอ") ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}">${item.status}</span></td>
+              <td class="p-3.5 text-center">
+                <div class="flex items-center justify-center space-x-1.5 no-print">
+                  <button onclick="openViewModal('${item.id}', '${item.col2}', '${item.col3}', '${item.col4}', '${item.status}')" title="ดูรายละเอียด" class="p-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded transition"><i class="fa-solid fa-eye text-xs"></i></button>
+                  <button onclick="openEditModal('${item.id}', '${item.col2}', '${item.col3}', '${item.status}')" title="แก้ไข" class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded transition"><i class="fa-solid fa-pen text-xs"></i></button>
+                  <button onclick="openDeleteConfirmModal('${item.id}')" title="ลบ" class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                </div>
+              </td>
+            </tr>
+          `,
+                  )
+                  .join("")
+              : `<tr><td colspan="7" class="p-6 text-center text-slate-400">ไม่พบรายการเบิกค่าน้ำมันในเดือนนี้</td></tr>`;
+        } else if (activeHistoryTab === "cash") {
+          thead.innerHTML = `
+            <tr>
+              <th class="p-3.5 w-10 text-center no-print"><input type="checkbox" onchange="toggleSelectAll(this)" /></th>
+              <th class="p-3.5">Cash ID</th>
+              <th class="p-3.5">วัตถุประสงค์การเบิกเงิน</th>
+              <th class="p-3.5">จำนวนเงิน (บาท)</th>
+              <th class="p-3.5">ช่องทางรับเงิน</th>
+              <th class="p-3.5">สถานะการจ่าย</th>
+              <th class="p-3.5 text-center">ACTION (ดู/แก้/ลบ)</th>
+            </tr>
+          `;
+          tbody.innerHTML =
+            items.length > 0
+              ? items
+                  .map(
+                    (item) => `
+            <tr class="hover:bg-slate-50 transition">
+              <td class="p-3.5 text-center no-print"><input type="checkbox" class="row-checkbox" /></td>
+              <td class="p-3.5 font-semibold text-purple-700">${item.id}</td>
+              <td class="p-3.5 font-medium text-slate-900">${item.col2}</td>
+              <td class="p-3.5 font-bold text-emerald-600">${item.col3}</td>
+              <td class="p-3.5 text-slate-600">${item.col4}</td>
+              <td class="p-3.5"><span class="px-2.5 py-1 rounded-full text-xs font-medium ${item.status.includes("รอ") ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}">${item.status}</span></td>
+              <td class="p-3.5 text-center">
+                <div class="flex items-center justify-center space-x-1.5 no-print">
+                  <button onclick="openViewModal('${item.id}', '${item.col2}', '${item.col3}', '${item.col4}', '${item.status}')" title="ดูรายละเอียด" class="p-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded transition"><i class="fa-solid fa-eye text-xs"></i></button>
+                  <button onclick="openEditModal('${item.id}', '${item.col2}', '${item.col3}', '${item.status}')" title="แก้ไข" class="p-1.5 bg-amber-50 text-amber-600 hover:bg-amber-100 rounded transition"><i class="fa-solid fa-pen text-xs"></i></button>
+                  <button onclick="openDeleteConfirmModal('${item.id}')" title="ลบ" class="p-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
+                </div>
+              </td>
+            </tr>
+          `,
+                  )
+                  .join("")
+              : `<tr><td colspan="7" class="p-6 text-center text-slate-400">ไม่พบรายการเบิกเงินในเดือนนี้</td></tr>`;
+        }
+      }
+
+      let isDrawing = false;
+      let ctx = null;
+
+      function initSignatureCanvas() {
+        const canvas = document.getElementById("sig-canvas");
+        if (!canvas) return;
+        ctx = canvas.getContext("2d");
+
+        function resizeCanvas() {
+          canvas.width = canvas.parentElement.clientWidth - 16;
+          canvas.height = 96;
+        }
+        resizeCanvas();
+
+        canvas.addEventListener("mousedown", startDraw);
+        canvas.addEventListener("mousemove", drawing);
+        canvas.addEventListener("mouseup", stopDraw);
+        canvas.addEventListener("mouseleave", stopDraw);
+
+        canvas.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          startDraw(e.touches[0]);
+        });
+        canvas.addEventListener("touchmove", (e) => {
+          e.preventDefault();
+          drawing(e.touches[0]);
+        });
+        canvas.addEventListener("touchend", stopDraw);
+      }
+
+      function startDraw(e) {
+        isDrawing = true;
+        ctx.beginPath();
+        const rect = e.target.getBoundingClientRect();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      }
+
+      function drawing(e) {
+        if (!isDrawing) return;
+        const rect = e.target.getBoundingClientRect();
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.strokeStyle = "#0f172a";
+        ctx.lineWidth = 2;
+        ctx.lineCap = "round";
+        ctx.stroke();
+      }
+
+      function stopDraw() {
+        isDrawing = false;
+      }
+
+      function clearSignature() {
+        const canvas = document.getElementById("sig-canvas");
+        if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function toggleNotifDropdown() {
+        document.getElementById("notif-dropdown").classList.toggle("hidden");
+      }
+      function clearNotif() {
+        document.getElementById("notif-badge")?.classList.add("hidden");
+        document.getElementById("notif-ping")?.classList.add("hidden");
+        showToast("Read all notifications", "success");
+      }
+
+      function logout() {
+        window.location.href = "login.html";
+      }
+
+      const roleMenus = [
+        {
+          id: "page-tech-dashboard",
+          icon: "fa-chart-pie",
+          label: "Dashboard ผลงานของฉัน (Personal)",
+        },
+        {
+          id: "page-tech-profile",
+          icon: "fa-wallet",
+          label: "บัญชีส่วนตัว & สรุปรายได้ของฉัน",
+        },
+        {
+          id: "generic:คิวงานที่ได้รับมอบหมาย:fa-calendar-check",
+          icon: "fa-calendar-check",
+          label: "คิวงานที่ได้รับมอบหมาย",
+        },
+        {
+          id: "page-tech-cashier-list",
+          icon: "fa-cash-register",
+          label: "จัดการการเงิน & เอกสารหน้างาน",
+        },
+      ];
+
+      function renderSidebar() {
+        const nav = document.getElementById("sidebar-nav");
+        if (!nav) return;
+        nav.innerHTML = roleMenus
+          .map((item) => {
+            const isActive = currentActiveMenuId === item.id;
+            return `
+          <button onclick="showPage('${item.id}')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-medium ${isActive ? "bg-purple-600 text-white shadow-md" : "text-slate-400 hover:bg-slate-800 hover:text-slate-200"} transition-all duration-200">
+            <i class="fa-solid ${item.icon} w-5 text-sm"></i><span class="truncate">${item.label}</span>
+          </button>
+        `;
+          })
+          .join("");
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        renderSidebar();
+        renderProfileHistoryTable();
+        initSignatureCanvas();
+        loadTechnicianJobs();
+      });
+    </script>
+  </body>
+</html>
